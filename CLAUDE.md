@@ -5,14 +5,15 @@ Each agent owns a specific domain, enforcing separation of concerns and quality.
 
 ## Technology Stack
 
-- **Engine**: [CHOOSE: Godot 4 / Unity / Unreal Engine 5]
-- **Language**: [CHOOSE: GDScript / C# / C++ / Blueprint]
+- **Engine**: Valthorne 1.3.0 (lightweight 2D Java engine, LWJGL-based)
+- **Language**: Java
 - **Version Control**: Git with trunk-based development
-- **Build System**: [SPECIFY after choosing engine]
-- **Asset Pipeline**: [SPECIFY after choosing engine]
+- **Build System**: Gradle
+- **Asset Pipeline**: Valthorne Asset System (async loading, PNG/WAV/OGG/MP3)
 
-> **Note**: Engine-specialist agents exist for Godot, Unity, and Unreal with
-> dedicated sub-specialists. Use the set matching your engine.
+> **Note**: Valthorne is a custom 2D engine — standard engine-specialist agents
+> (Godot, Unity, Unreal) do not apply. Refer to `docs/engine-reference/valthorne/`
+> for API documentation. Source: https://github.com/tehnewb/Valthorne
 
 ## Project Structure
 
@@ -20,7 +21,7 @@ Each agent owns a specific domain, enforcing separation of concerns and quality.
 
 ## Engine Version Reference
 
-@docs/engine-reference/godot/VERSION.md
+@docs/engine-reference/valthorne/VERSION.md
 
 ## Technical Preferences
 
