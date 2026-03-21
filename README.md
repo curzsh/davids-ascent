@@ -45,6 +45,11 @@ Requires **Java 21+** and the Gradle wrapper is included.
 
 Game jam entry — in active development.
 
+## Built With
+
+- [Valthorne Engine](https://github.com/tehnewb/Valthorne) — Lightweight 2D Java game engine
+- [Claude Code Game Studios](https://github.com/Donchitos/Claude-Code-Game-Studios) — AI game dev studio architecture (48 agents, 37 workflows)
+
 ## License
 
 MIT
