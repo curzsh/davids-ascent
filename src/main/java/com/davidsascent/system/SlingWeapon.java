@@ -3,6 +3,7 @@ package com.davidsascent.system;
 import com.davidsascent.core.Collision;
 import com.davidsascent.entity.Enemy;
 import valthorne.graphics.Color;
+import valthorne.graphics.texture.TextureBatch;
 
 import java.util.List;
 
@@ -10,18 +11,19 @@ import java.util.List;
  * The Sling — David's starter weapon.
  * Auto-fires a stone at the nearest enemy within range.
  */
-public class SlingWeapon {
+public class SlingWeapon implements Weapon {
 
-    private float fireRate = 1.0f;    // shots per second
+    private float fireRate = 1.0f;
     private float fireTimer = 0f;
-    private float range = 250f;        // pixels — max detection range
-    private static final float MIN_RANGE = 40f; // don't target enemies sitting on top of player
+    private float range = 250f;
+    private static final float MIN_RANGE = 40f;
     private int damage = 10;
     private float projectileSpeed = 400f;
     private float projectileSize = 8f;
     private float projectileLifetime = 2f;
     private static final Color STONE_COLOR = Color.LIGHT_GRAY;
 
+    @Override
     public void update(float delta, float playerX, float playerY,
                        List<Enemy> enemies, ProjectileSystem projectiles) {
         fireTimer += delta;
@@ -35,9 +37,17 @@ public class SlingWeapon {
         }
     }
 
+    @Override
+    public void render(TextureBatch batch, float playerX, float playerY) {
+        // Sling has no special visual — just projectiles
+    }
+
+    @Override
+    public String getName() { return "Sling"; }
+
     private Enemy findNearestEnemy(float px, float py, List<Enemy> enemies) {
         Enemy nearest = null;
-        float nearestDist = range * range; // compare squared distances
+        float nearestDist = range * range;
         float minDist = MIN_RANGE * MIN_RANGE;
 
         for (Enemy e : enemies) {
@@ -56,7 +66,6 @@ public class SlingWeapon {
         float dx = target.getX() - px;
         float dy = target.getY() - py;
         float dist = (float) Math.sqrt(dx * dx + dy * dy);
-
         if (dist < 1f) return;
 
         float velX = (dx / dist) * projectileSpeed;
@@ -66,7 +75,6 @@ public class SlingWeapon {
                          projectileSize, projectileLifetime, STONE_COLOR);
     }
 
-    // --- Upgrade methods (for level-up system later) ---
     public void increaseFireRate(float amount) { fireRate += amount; }
     public void increaseDamage(int amount) { damage += amount; }
     public void increaseRange(float amount) { range += amount; }

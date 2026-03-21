@@ -66,6 +66,14 @@ public abstract class Enemy {
         if (hitCooldown > 0) hitCooldown -= delta;
     }
 
+    /**
+     * Push the enemy by a velocity impulse (used for knockback).
+     */
+    public void push(float pushX, float pushY) {
+        x += pushX * 0.1f; // apply as a small instant displacement
+        y += pushY * 0.1f;
+    }
+
     // --- Getters ---
     public float getX() { return x; }
     public float getY() { return y; }

@@ -1,18 +1,25 @@
 package com.davidsascent.scene;
 
 import com.davidsascent.Game;
+import com.davidsascent.core.Fonts;
 import com.davidsascent.core.PlaceholderGraphics;
-import com.davidsascent.entity.ChaserEnemy;
 import com.davidsascent.entity.Enemy;
 import com.davidsascent.entity.Player;
+import com.davidsascent.stage.StageData;
+import com.davidsascent.stage.StageManager;
+import com.davidsascent.stage.WaveSpawner;
 import com.davidsascent.system.EnemySystem;
 import com.davidsascent.system.ProjectileSystem;
 import com.davidsascent.system.SlingWeapon;
 import com.davidsascent.system.Upgrade;
 import com.davidsascent.system.UpgradePool;
+import com.davidsascent.system.WeaponSystem;
 import com.davidsascent.system.XpSystem;
+import com.davidsascent.ui.DialogueUI;
 import com.davidsascent.ui.HUD;
 import com.davidsascent.ui.LevelUpUI;
+import org.lwjgl.opengl.GL11;
+import valthorne.SwapInterval;
 import valthorne.Window;
 import valthorne.camera.OrthographicCamera;
 import valthorne.graphics.Color;
@@ -21,30 +28,27 @@ import valthorne.scene.Scene;
 import valthorne.viewport.FitViewport;
 
 import java.util.List;
-import java.util.Random;
 
 /**
- * The main gameplay scene — David fights enemies across stages.
- * Handles player, enemies, projectiles, weapons, XP, upgrades, and UI.
+ * The main gameplay scene — David fights through 5 biblical stages.
  */
 public class PlayingScene extends Scene {
 
     private Player player;
     private EnemySystem enemySystem;
     private ProjectileSystem projectileSystem;
-    private SlingWeapon sling;
+    private WeaponSystem weaponSystem;
     private XpSystem xpSystem;
     private UpgradePool upgradePool;
     private LevelUpUI levelUpUI;
+    private DialogueUI dialogueUI;
     private HUD hud;
 
-    // Simple test spawner — will be replaced by WaveSpawner system
-    private final Random random = new Random();
-    private float spawnTimer = 0f;
-    private float spawnInterval = 1.5f;
+    private StageManager stageManager;
+    private WaveSpawner waveSpawner;
 
-    // Track if we're in level-up mode
     private boolean inLevelUp = false;
+    private Color currentBgColor = Color.BLACK;
 
     @Override
     public void init() {
@@ -58,50 +62,92 @@ public class PlayingScene extends Scene {
         setCamera(camera);
         setViewport(viewport);
 
+        Window.setSwapInterval(SwapInterval.VSYNC);
         PlaceholderGraphics.init();
+        Fonts.init();
 
         player = new Player(Game.WORLD_WIDTH / 2f, Game.WORLD_HEIGHT / 2f);
         enemySystem = new EnemySystem();
         projectileSystem = new ProjectileSystem();
-        sling = new SlingWeapon();
+        weaponSystem = new WeaponSystem();
+        weaponSystem.addWeapon(new SlingWeapon()); // starter weapon
         xpSystem = new XpSystem();
-        upgradePool = new UpgradePool(player, sling);
+        upgradePool = new UpgradePool(player, weaponSystem);
         levelUpUI = new LevelUpUI();
+        dialogueUI = new DialogueUI();
         hud = new HUD();
+
+        stageManager = new StageManager();
+        waveSpawner = new WaveSpawner();
+
+        // Start with the first stage's pre-dialogue
+        showStageDialogue(true);
     }
 
     @Override
     public void update(float delta) {
         if (isPaused()) return;
 
-        // Level-up screen — freeze gameplay, handle selection
+        StageManager.Phase phase = stageManager.getCurrentPhase();
+
+        switch (phase) {
+            case PRE_DIALOGUE, POST_DIALOGUE -> updateDialogue(delta);
+            case PLAYING -> updatePlaying(delta);
+            case VICTORY -> updateVictory(delta);
+        }
+    }
+
+    private void updateDialogue(float delta) {
+        if (dialogueUI.update(delta)) {
+            // Dialogue dismissed
+            if (stageManager.getCurrentPhase() == StageManager.Phase.PRE_DIALOGUE) {
+                // Start the stage
+                startCurrentStage();
+            } else {
+                // Post-dialogue done — advance to next stage
+                if (!stageManager.advanceStage()) {
+                    // No more stages — victory!
+                    showVictoryDialogue();
+                } else {
+                    showStageDialogue(true);
+                }
+            }
+        }
+    }
+
+    private void updatePlaying(float delta) {
+        // Level-up screen
         if (inLevelUp) {
             Upgrade chosen = levelUpUI.update(getViewport());
             if (chosen != null) {
                 chosen.apply();
                 xpSystem.consumeLevelUp();
                 inLevelUp = false;
-
-                // Check for another immediate level-up
                 if (xpSystem.isLevelUpReady()) {
                     triggerLevelUp();
                 }
             }
-            return; // don't update gameplay while in level-up
+            return;
+        }
+
+        // Check player death first
+        if (player.isDead()) {
+            // TODO: game over scene
+            return;
         }
 
         // Player
         player.handleInput(delta);
         player.update(delta);
 
-        // Weapon auto-fire
-        sling.update(delta, player.getCenterX(), player.getCenterY(),
-                     enemySystem.getEnemies(), projectileSystem);
+        // Weapon auto-fire (all active weapons)
+        weaponSystem.update(delta, player.getCenterX(), player.getCenterY(),
+                           enemySystem.getEnemies(), projectileSystem);
 
         // Projectiles
         projectileSystem.update(delta);
 
-        // Enemies (movement + contact damage)
+        // Enemies
         enemySystem.update(delta, player);
 
         // Projectile-enemy collisions
@@ -110,77 +156,104 @@ public class PlayingScene extends Scene {
             xpSystem.spawnGem(e.getX(), e.getY(), e.getXpValue());
         }
 
-        // Check player death — stop everything
-        if (player.isDead()) {
-            // TODO: transition to game over scene
-            return;
-        }
-
-        // XP collection + level-up check
+        // XP collection
         xpSystem.update(delta, player);
         if (xpSystem.isLevelUpReady() && !inLevelUp) {
             triggerLevelUp();
         }
 
-        // Enemy spawner
-        spawnTimer += delta;
-        if (spawnTimer >= spawnInterval) {
-            spawnTestEnemy();
-            spawnTimer = 0f;
+        // Wave spawner
+        waveSpawner.update(delta, enemySystem);
+
+        // Check stage completion
+        if (waveSpawner.isStageComplete()) {
+            stageManager.setPhase(StageManager.Phase.POST_DIALOGUE);
+            showStageDialogue(false);
         }
+    }
+
+    private void updateVictory(float delta) {
+        if (dialogueUI.isActive()) {
+            dialogueUI.update(delta);
+        }
+        // Game complete — just sit on the victory screen
+    }
+
+    /**
+     * Override drawScene to clear the screen BEFORE the batch begins.
+     * The default Scene.drawScene() does: viewport.bind -> batch.begin -> draw -> batch.end -> viewport.unbind
+     * We need Window.clear() to happen before batch.begin() to avoid artifacts.
+     */
+    @Override
+    protected void drawScene() {
+        // Clear the full window (including letterbox areas) before viewport is set
+        GL11.glClearColor(currentBgColor.getRed() / 255f, currentBgColor.getGreen() / 255f,
+                          currentBgColor.getBlue() / 255f, 1f);
+        GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
+        super.drawScene();
     }
 
     @Override
     public void draw(TextureBatch batch) {
-        Window.clear(Color.BLACK);
+        StageManager.Phase phase = stageManager.getCurrentPhase();
 
-        // Game world
-        player.render(batch);
-        enemySystem.render(batch);
-        projectileSystem.render(batch);
-        xpSystem.render(batch);
+        if (phase == StageManager.Phase.PLAYING) {
+            player.render(batch);
+            weaponSystem.render(batch, player.getCenterX(), player.getCenterY());
+            enemySystem.render(batch);
+            projectileSystem.render(batch);
+            xpSystem.render(batch);
+            hud.render(batch, player, xpSystem);
 
-        // UI on top
-        hud.render(batch, player, xpSystem);
+            if (inLevelUp) {
+                levelUpUI.render(batch);
+            }
+        }
 
-        // Level-up overlay (on top of everything)
-        if (inLevelUp) {
-            levelUpUI.render(batch);
+        if (dialogueUI.isActive()) {
+            dialogueUI.render(batch);
         }
     }
 
     @Override
     public void dispose() {
         PlaceholderGraphics.dispose();
+        Fonts.dispose();
+    }
+
+    // --- Stage lifecycle helpers ---
+
+    private void showStageDialogue(boolean isPre) {
+        StageData stage = stageManager.getCurrentStage();
+        if (stage == null) return;
+
+        if (isPre) {
+            String text = stage.getScripture() + "\n\n" + stage.getPreDialogue();
+            dialogueUI.show("Stage " + stage.getStageNumber() + ": " + stage.getName(), text);
+        } else {
+            dialogueUI.show(stage.getName() + " — Complete!", stage.getPostDialogue());
+        }
+    }
+
+    private void showVictoryDialogue() {
+        dialogueUI.show("Victory!",
+            "The giant has fallen!\nDavid's faith has triumphed\nover impossible odds.\n\nThank you for playing!");
+    }
+
+    private void startCurrentStage() {
+        StageData stage = stageManager.getCurrentStage();
+        if (stage == null) return;
+
+        stageManager.setPhase(StageManager.Phase.PLAYING);
+        currentBgColor = stage.getArenaColor();
+        enemySystem.clear();
+        waveSpawner.startStage(stage);
+        hud.setStageLabel("Stage " + stage.getStageNumber() + ": " + stage.getName());
     }
 
     private void triggerLevelUp() {
         inLevelUp = true;
         List<Upgrade> choices = upgradePool.getRandomChoices(3);
         levelUpUI.show(choices);
-    }
-
-    /**
-     * Spawns a test chaser enemy from a random screen edge.
-     */
-    private void spawnTestEnemy() {
-        float x, y;
-        int edge = random.nextInt(4);
-        switch (edge) {
-            case 0 -> { x = random.nextFloat() * Game.WORLD_WIDTH; y = Game.WORLD_HEIGHT + 20; }
-            case 1 -> { x = random.nextFloat() * Game.WORLD_WIDTH; y = -20; }
-            case 2 -> { x = -20; y = random.nextFloat() * Game.WORLD_HEIGHT; }
-            default -> { x = Game.WORLD_WIDTH + 20; y = random.nextFloat() * Game.WORLD_HEIGHT; }
-        }
-
-        enemySystem.addEnemy(new ChaserEnemy(
-            x, y,
-            10,           // health
-            80f,          // speed
-            10,           // contact damage
-            15,           // XP value
-            24f,          // size
-            Color.RED
-        ));
     }
 }
