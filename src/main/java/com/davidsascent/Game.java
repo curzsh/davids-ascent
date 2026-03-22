@@ -1,6 +1,6 @@
 package com.davidsascent;
 
-import com.davidsascent.scene.PlayingScene;
+import com.davidsascent.scene.TitleScene;
 import valthorne.JGL;
 import valthorne.scene.GameScreen;
 
@@ -26,7 +26,7 @@ public class Game {
 
     public static void main(String[] args) {
         com.davidsascent.core.BalanceConfig.load();
-        gameScreen = new GameScreen(new PlayingScene());
+        gameScreen = new GameScreen(new TitleScene());
         JGL.init(gameScreen, "David's Ascent", WORLD_WIDTH, WORLD_HEIGHT);
     }
 }

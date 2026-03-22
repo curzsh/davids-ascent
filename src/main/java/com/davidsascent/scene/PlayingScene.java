@@ -19,6 +19,7 @@ import com.davidsascent.system.UpgradePool;
 import com.davidsascent.system.WeaponSystem;
 import com.davidsascent.system.XpSystem;
 import com.davidsascent.ui.DamageNumberSystem;
+import com.davidsascent.ui.DeathParticleSystem;
 import com.davidsascent.ui.DialogueUI;
 import com.davidsascent.ui.HUD;
 import com.davidsascent.ui.LevelUpUI;
@@ -48,6 +49,7 @@ public class PlayingScene extends Scene {
     private DialogueUI dialogueUI;
     private HUD hud;
     private DamageNumberSystem damageNumbers;
+    private DeathParticleSystem deathParticles;
 
     private StageManager stageManager;
     private WaveSpawner waveSpawner;
@@ -89,6 +91,7 @@ public class PlayingScene extends Scene {
         hud = new HUD();
         hud.setWeaponSystem(weaponSystem);
         damageNumbers = new DamageNumberSystem();
+        deathParticles = new DeathParticleSystem();
         bossProjectiles = new BossProjectileSystem();
 
         stageManager = new StageManager();
@@ -180,6 +183,7 @@ public class PlayingScene extends Scene {
         List<Enemy> killed = projectileSystem.checkCollisions(enemySystem.getEnemies(), damageNumbers);
         for (Enemy e : killed) {
             xpSystem.spawnGem(e.getX(), e.getY(), e.getXpValue());
+            deathParticles.burst(e.getX(), e.getY(), e.getColor());
         }
 
         // XP collection
@@ -188,8 +192,9 @@ public class PlayingScene extends Scene {
             triggerLevelUp();
         }
 
-        // Damage numbers
+        // Damage numbers + death particles
         damageNumbers.update(delta);
+        deathParticles.update(delta);
 
         // Wave spawner
         waveSpawner.update(delta, enemySystem);
@@ -282,6 +287,7 @@ public class PlayingScene extends Scene {
             projectileSystem.render(batch);
             xpSystem.render(batch);
             damageNumbers.render(batch);
+            deathParticles.render(batch);
             hud.render(batch, player, xpSystem);
 
             if (inLevelUp) {

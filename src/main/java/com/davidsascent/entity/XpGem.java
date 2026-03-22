@@ -14,6 +14,7 @@ public class XpGem {
     private int value;
     private boolean active;
     private float size = 10f;
+    private float age = 0f;
 
     /** Magnet range — player auto-collects gems within this distance. */
     public static final float COLLECT_RADIUS = 50f;
@@ -22,6 +23,7 @@ public class XpGem {
     private static final float MAGNET_SPEED = 300f;
 
     private static final Color GEM_COLOR = Color.CYAN;
+    private static final Color GEM_GLOW = new Color(0.3f, 0.8f, 1f, 0.3f);
 
     public XpGem() {
         this.active = false;
@@ -31,11 +33,13 @@ public class XpGem {
         this.x = x;
         this.y = y;
         this.value = value;
+        this.age = 0f;
         this.active = true;
     }
 
     public void update(float delta, float playerX, float playerY) {
         if (!active) return;
+        age += delta;
 
         // Drift toward player if within magnet range
         float dx = playerX - x;
@@ -50,6 +54,12 @@ public class XpGem {
 
     public void render(TextureBatch batch) {
         if (!active) return;
+        // Pulsing glow behind the gem
+        float pulse = (float) Math.sin(age * 5f) * 0.3f + 0.7f;
+        float glowSize = size + 6f * pulse;
+        PlaceholderGraphics.drawRect(batch, x - glowSize / 2f, y - glowSize / 2f,
+                                     glowSize, glowSize, GEM_GLOW);
+        // Core gem
         PlaceholderGraphics.drawRect(batch, x - size / 2f, y - size / 2f,
                                      size, size, GEM_COLOR);
     }

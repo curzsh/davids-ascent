@@ -25,6 +25,11 @@ public abstract class Enemy {
     protected float hitCooldown = 0f;
     private static final float HIT_COOLDOWN_TIME = 0.1f;
 
+    /** Hit flash — white overlay when damaged. */
+    protected float hitFlashTimer = 0f;
+    private static final float HIT_FLASH_DURATION = 0.12f;
+    private static final Color HIT_FLASH_COLOR = new Color(1f, 1f, 1f, 0.7f);
+
     public Enemy(float x, float y, int health, float speed, int damage,
                  int xpValue, float size, Color color) {
         this.x = x;
@@ -51,6 +56,11 @@ public abstract class Enemy {
         if (!alive) return;
         PlaceholderGraphics.drawRect(batch, x - width / 2f, y - height / 2f,
                                      width, height, color);
+        // White flash overlay when hit
+        if (hitFlashTimer > 0) {
+            PlaceholderGraphics.drawRect(batch, x - width / 2f, y - height / 2f,
+                                         width, height, HIT_FLASH_COLOR);
+        }
     }
 
     /**
@@ -60,6 +70,7 @@ public abstract class Enemy {
         if (hitCooldown > 0) return false;
         health -= amount;
         hitCooldown = HIT_COOLDOWN_TIME;
+        hitFlashTimer = HIT_FLASH_DURATION;
         if (health <= 0) {
             alive = false;
         }
@@ -68,6 +79,7 @@ public abstract class Enemy {
 
     protected void updateCooldowns(float delta) {
         if (hitCooldown > 0) hitCooldown -= delta;
+        if (hitFlashTimer > 0) hitFlashTimer -= delta;
     }
 
     /**
@@ -89,4 +101,5 @@ public abstract class Enemy {
     public int getDamage() { return damage; }
     public int getXpValue() { return xpValue; }
     public boolean isAlive() { return alive; }
+    public Color getColor() { return color; }
 }
