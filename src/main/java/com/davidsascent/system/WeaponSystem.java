@@ -37,9 +37,10 @@ public class WeaponSystem {
     }
 
     public void update(float delta, float playerX, float playerY,
-                       List<Enemy> enemies, ProjectileSystem projectiles) {
+                       List<Enemy> enemies, ProjectileSystem projectiles,
+                       com.davidsascent.ui.DamageNumberSystem dmgNumbers) {
         for (Weapon w : weapons) {
-            w.update(delta, playerX, playerY, enemies, projectiles);
+            w.update(delta, playerX, playerY, enemies, projectiles, dmgNumbers);
         }
     }
 

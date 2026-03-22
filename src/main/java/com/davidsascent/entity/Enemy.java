@@ -53,13 +53,17 @@ public abstract class Enemy {
                                      width, height, color);
     }
 
-    public void takeDamage(int amount) {
-        if (hitCooldown > 0) return;
+    /**
+     * @return true if damage was actually applied (not on cooldown)
+     */
+    public boolean takeDamage(int amount) {
+        if (hitCooldown > 0) return false;
         health -= amount;
         hitCooldown = HIT_COOLDOWN_TIME;
         if (health <= 0) {
             alive = false;
         }
+        return true;
     }
 
     protected void updateCooldowns(float delta) {

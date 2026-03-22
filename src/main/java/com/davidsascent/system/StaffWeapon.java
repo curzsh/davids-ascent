@@ -29,7 +29,8 @@ public class StaffWeapon implements Weapon {
 
     @Override
     public void update(float delta, float playerX, float playerY,
-                       List<Enemy> enemies, ProjectileSystem projectiles) {
+                       List<Enemy> enemies, ProjectileSystem projectiles,
+                       com.davidsascent.ui.DamageNumberSystem dmgNumbers) {
         fireTimer += delta;
         if (flashTimer > 0) flashTimer -= delta;
 
@@ -40,7 +41,9 @@ public class StaffWeapon implements Weapon {
                 if (!e.isAlive()) continue;
                 float dist = Collision.distance(playerX, playerY, e.getX(), e.getY());
                 if (dist < radius) {
-                    e.takeDamage(damage);
+                    if (e.takeDamage(damage)) {
+                        dmgNumbers.spawn(e.getX(), e.getY(), damage);
+                    }
                     // Knockback — push enemy away from player
                     float dx = e.getX() - playerX;
                     float dy = e.getY() - playerY;

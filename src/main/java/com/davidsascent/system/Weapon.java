@@ -1,6 +1,7 @@
 package com.davidsascent.system;
 
 import com.davidsascent.entity.Enemy;
+import com.davidsascent.ui.DamageNumberSystem;
 import valthorne.graphics.texture.TextureBatch;
 
 import java.util.List;
@@ -13,7 +14,8 @@ public interface Weapon {
 
     /** Update weapon timer and fire when ready. */
     void update(float delta, float playerX, float playerY,
-                List<Enemy> enemies, ProjectileSystem projectiles);
+                List<Enemy> enemies, ProjectileSystem projectiles,
+                DamageNumberSystem dmgNumbers);
 
     /** Render any weapon-specific visuals (melee arcs, etc.). */
     void render(TextureBatch batch, float playerX, float playerY);

@@ -3,6 +3,7 @@ package com.davidsascent.system;
 import com.davidsascent.core.Collision;
 import com.davidsascent.entity.Enemy;
 import com.davidsascent.entity.Projectile;
+import com.davidsascent.ui.DamageNumberSystem;
 import valthorne.graphics.Color;
 import valthorne.graphics.texture.TextureBatch;
 
@@ -53,7 +54,7 @@ public class ProjectileSystem {
      * Deactivates projectiles on hit and deals damage to enemies.
      * @return list of enemies killed this frame (for XP drops)
      */
-    public List<Enemy> checkCollisions(List<Enemy> enemies) {
+    public List<Enemy> checkCollisions(List<Enemy> enemies, DamageNumberSystem dmgNumbers) {
         List<Enemy> killed = new ArrayList<>();
 
         for (Projectile p : pool) {
@@ -65,7 +66,9 @@ public class ProjectileSystem {
                 if (Collision.circlesOverlap(
                         p.getX(), p.getY(), p.getRadius(),
                         e.getX(), e.getY(), e.getRadius())) {
-                    e.takeDamage(p.getDamage());
+                    if (e.takeDamage(p.getDamage())) {
+                        dmgNumbers.spawn(e.getX(), e.getY(), p.getDamage());
+                    }
                     p.deactivate();
 
                     if (!e.isAlive()) {

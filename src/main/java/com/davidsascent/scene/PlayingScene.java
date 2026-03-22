@@ -15,6 +15,7 @@ import com.davidsascent.system.Upgrade;
 import com.davidsascent.system.UpgradePool;
 import com.davidsascent.system.WeaponSystem;
 import com.davidsascent.system.XpSystem;
+import com.davidsascent.ui.DamageNumberSystem;
 import com.davidsascent.ui.DialogueUI;
 import com.davidsascent.ui.HUD;
 import com.davidsascent.ui.LevelUpUI;
@@ -43,6 +44,7 @@ public class PlayingScene extends Scene {
     private LevelUpUI levelUpUI;
     private DialogueUI dialogueUI;
     private HUD hud;
+    private DamageNumberSystem damageNumbers;
 
     private StageManager stageManager;
     private WaveSpawner waveSpawner;
@@ -76,6 +78,7 @@ public class PlayingScene extends Scene {
         levelUpUI = new LevelUpUI();
         dialogueUI = new DialogueUI();
         hud = new HUD();
+        damageNumbers = new DamageNumberSystem();
 
         stageManager = new StageManager();
         waveSpawner = new WaveSpawner();
@@ -145,7 +148,7 @@ public class PlayingScene extends Scene {
 
         // Weapon auto-fire (all active weapons)
         weaponSystem.update(delta, player.getCenterX(), player.getCenterY(),
-                           enemySystem.getEnemies(), projectileSystem);
+                           enemySystem.getEnemies(), projectileSystem, damageNumbers);
 
         // Projectiles
         projectileSystem.update(delta);
@@ -154,7 +157,7 @@ public class PlayingScene extends Scene {
         enemySystem.update(delta, player);
 
         // Projectile-enemy collisions
-        List<Enemy> killed = projectileSystem.checkCollisions(enemySystem.getEnemies());
+        List<Enemy> killed = projectileSystem.checkCollisions(enemySystem.getEnemies(), damageNumbers);
         for (Enemy e : killed) {
             xpSystem.spawnGem(e.getX(), e.getY(), e.getXpValue());
         }
@@ -164,6 +167,9 @@ public class PlayingScene extends Scene {
         if (xpSystem.isLevelUpReady() && !inLevelUp) {
             triggerLevelUp();
         }
+
+        // Damage numbers
+        damageNumbers.update(delta);
 
         // Wave spawner
         waveSpawner.update(delta, enemySystem);
@@ -206,6 +212,7 @@ public class PlayingScene extends Scene {
             enemySystem.render(batch);
             projectileSystem.render(batch);
             xpSystem.render(batch);
+            damageNumbers.render(batch);
             hud.render(batch, player, xpSystem);
 
             if (inLevelUp) {

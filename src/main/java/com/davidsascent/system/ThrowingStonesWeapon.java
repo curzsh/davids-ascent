@@ -24,7 +24,8 @@ public class ThrowingStonesWeapon implements Weapon {
 
     @Override
     public void update(float delta, float playerX, float playerY,
-                       List<Enemy> enemies, ProjectileSystem projectiles) {
+                       List<Enemy> enemies, ProjectileSystem projectiles,
+                       com.davidsascent.ui.DamageNumberSystem dmgNumbers) {
         fireTimer += delta;
 
         if (fireTimer >= 1f / fireRate) {
