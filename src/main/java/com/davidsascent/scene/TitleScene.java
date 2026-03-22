@@ -44,6 +44,7 @@ public class TitleScene extends Scene {
         setViewport(viewport);
 
         Window.setSwapInterval(SwapInterval.VSYNC);
+        Window.setResizable(false);
         PlaceholderGraphics.init();
         Fonts.init();
 
