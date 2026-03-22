@@ -2,10 +2,13 @@ package com.davidsascent.core;
 
 import valthorne.graphics.Color;
 import valthorne.graphics.font.Font;
+import valthorne.graphics.font.FontData;
 import valthorne.graphics.texture.TextureBatch;
+import valthorne.io.file.ValthorneFiles;
 
 /**
  * Central font manager. Loads fonts once and provides them globally.
+ * Uses ValthorneFiles.readBytes for classpath-safe loading (works inside JARs).
  */
 public final class Fonts {
 
@@ -13,12 +16,17 @@ public final class Fonts {
     private static Font medium;  // 12px — card descriptions, dialogue
     private static Font large;   // 16px — card titles, stage names
 
+    /** Default character range: ASCII printable (32-126), 95 characters. */
+    private static final int FIRST_CHAR = 32;
+    private static final int CHAR_COUNT = 95;
+
     private Fonts() {}
 
     public static void init() {
-        small = new Font("assets/fonts/PressStart2P.ttf", 8);
-        medium = new Font("assets/fonts/PressStart2P.ttf", 12);
-        large = new Font("assets/fonts/PressStart2P.ttf", 16);
+        byte[] fontBytes = ValthorneFiles.readBytes("fonts/PressStart2P.ttf");
+        small = new Font(FontData.load(fontBytes, 8, FIRST_CHAR, CHAR_COUNT));
+        medium = new Font(FontData.load(fontBytes, 12, FIRST_CHAR, CHAR_COUNT));
+        large = new Font(FontData.load(fontBytes, 16, FIRST_CHAR, CHAR_COUNT));
     }
 
     public static Font small() { return small; }
