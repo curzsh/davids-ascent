@@ -17,13 +17,16 @@ import java.nio.ByteBuffer;
 public final class PlaceholderGraphics {
 
     private static Texture whitePixel;
+    private static int refCount = 0;
 
     private PlaceholderGraphics() {}
 
     /**
-     * Initialize the 1x1 white pixel texture. Call once during init().
+     * Initialize the 1x1 white pixel texture. Safe to call multiple times.
      */
     public static void init() {
+        refCount++;
+        if (whitePixel != null) return;
         ByteBuffer buf = ByteBuffer.allocateDirect(4);
         buf.put((byte) 0xFF).put((byte) 0xFF).put((byte) 0xFF).put((byte) 0xFF);
         buf.flip();
@@ -48,8 +51,11 @@ public final class PlaceholderGraphics {
     }
 
     public static void dispose() {
+        refCount--;
+        if (refCount > 0) return;
         if (whitePixel != null) {
             whitePixel.dispose();
+            whitePixel = null;
         }
     }
 }

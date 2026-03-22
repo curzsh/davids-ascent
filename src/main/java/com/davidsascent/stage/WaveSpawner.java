@@ -1,6 +1,7 @@
 package com.davidsascent.stage;
 
 import com.davidsascent.Game;
+import com.davidsascent.core.GameSprites;
 import com.davidsascent.entity.ChaserEnemy;
 import com.davidsascent.entity.DashEnemy;
 import com.davidsascent.entity.Enemy;
@@ -23,6 +24,10 @@ public class WaveSpawner {
     private int[] spawned;       // how many enemies spawned per wave
     private float[] spawnTimers; // time since last spawn per wave
     private boolean stageComplete = false;
+    private boolean paused = false;
+
+    /** Pause/resume wave spawning (used for debug boss-only fights). */
+    public void setPaused(boolean paused) { this.paused = paused; }
 
     public void startStage(StageData stage) {
         this.waves = stage.getWaves();
@@ -33,7 +38,7 @@ public class WaveSpawner {
     }
 
     public void update(float delta, EnemySystem enemySystem) {
-        if (stageComplete || waves == null) return;
+        if (stageComplete || waves == null || paused) return;
 
         stageTimer += delta;
 
@@ -88,9 +93,16 @@ public class WaveSpawner {
             case DASHER -> new DashEnemy(
                 x, y, wave.health, wave.speed, wave.damage,
                 wave.xpValue, wave.size, wave.color);
-            default -> new ChaserEnemy(
-                x, y, wave.health, wave.speed, wave.damage,
-                wave.xpValue, wave.size, wave.color);
+            default -> {
+                ChaserEnemy chaser = new ChaserEnemy(
+                    x, y, wave.health, wave.speed, wave.damage,
+                    wave.xpValue, wave.size, wave.color);
+                // Use lion sprite for stage 1 chaser enemies
+                if (GameSprites.lionWalk != null) {
+                    chaser.setSpriteSheet(GameSprites.lionWalk);
+                }
+                yield chaser;
+            }
         };
         enemySystem.addEnemy(enemy);
     }

@@ -41,6 +41,9 @@ public class GameOverScene extends Scene {
         viewport.update(Window.getWidth(), Window.getHeight());
         setCamera(camera);
         setViewport(viewport);
+
+        PlaceholderGraphics.init();
+        Fonts.init();
     }
 
     @Override
@@ -108,5 +111,8 @@ public class GameOverScene extends Scene {
     }
 
     @Override
-    public void dispose() {}
+    public void dispose() {
+        PlaceholderGraphics.dispose();
+        Fonts.dispose();
+    }
 }

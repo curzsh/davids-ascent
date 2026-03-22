@@ -1,6 +1,8 @@
 package com.davidsascent.entity;
 
+import com.davidsascent.core.GameSprites;
 import com.davidsascent.core.PlaceholderGraphics;
+import com.davidsascent.core.SpriteSheet;
 import valthorne.graphics.Color;
 import valthorne.graphics.texture.TextureBatch;
 
@@ -30,6 +32,9 @@ public abstract class Enemy {
     private static final float HIT_FLASH_DURATION = 0.12f;
     private static final Color HIT_FLASH_COLOR = new Color(1f, 1f, 1f, 0.7f);
 
+    /** Optional sprite sheet for this enemy type. */
+    protected SpriteSheet spriteSheet;
+
     public Enemy(float x, float y, int health, float speed, int damage,
                  int xpValue, float size, Color color) {
         this.x = x;
@@ -54,8 +59,12 @@ public abstract class Enemy {
 
     public void render(TextureBatch batch) {
         if (!alive) return;
-        PlaceholderGraphics.drawRect(batch, x - width / 2f, y - height / 2f,
-                                     width, height, color);
+        if (spriteSheet != null) {
+            spriteSheet.draw(batch, x - width / 2f, y - height / 2f, width, height);
+        } else {
+            PlaceholderGraphics.drawRect(batch, x - width / 2f, y - height / 2f,
+                                         width, height, color);
+        }
         // White flash overlay when hit
         if (hitFlashTimer > 0) {
             PlaceholderGraphics.drawRect(batch, x - width / 2f, y - height / 2f,

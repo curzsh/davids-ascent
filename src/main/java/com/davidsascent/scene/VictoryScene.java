@@ -40,6 +40,9 @@ public class VictoryScene extends Scene {
         viewport.update(Window.getWidth(), Window.getHeight());
         setCamera(camera);
         setViewport(viewport);
+
+        PlaceholderGraphics.init();
+        Fonts.init();
     }
 
     @Override
@@ -139,5 +142,8 @@ public class VictoryScene extends Scene {
     }
 
     @Override
-    public void dispose() {}
+    public void dispose() {
+        PlaceholderGraphics.dispose();
+        Fonts.dispose();
+    }
 }

@@ -22,7 +22,15 @@ public final class Fonts {
 
     private Fonts() {}
 
+    private static int refCount = 0;
+
+    /**
+     * Load fonts if not already loaded. Uses reference counting so multiple
+     * scenes can safely call init/dispose independently.
+     */
     public static void init() {
+        refCount++;
+        if (small != null) return; // already loaded
         byte[] fontBytes = ValthorneFiles.readBytes("fonts/PressStart2P.ttf");
         small = new Font(FontData.load(fontBytes, 8, FIRST_CHAR, CHAR_COUNT));
         medium = new Font(FontData.load(fontBytes, 12, FIRST_CHAR, CHAR_COUNT));
@@ -41,8 +49,10 @@ public final class Fonts {
     }
 
     public static void dispose() {
-        if (small != null) small.dispose();
-        if (medium != null) medium.dispose();
-        if (large != null) large.dispose();
+        refCount--;
+        if (refCount > 0) return; // other scenes still using fonts
+        if (small != null) { small.dispose(); small = null; }
+        if (medium != null) { medium.dispose(); medium = null; }
+        if (large != null) { large.dispose(); large = null; }
     }
 }

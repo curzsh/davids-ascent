@@ -149,5 +149,8 @@ public class TitleScene extends Scene {
     }
 
     @Override
-    public void dispose() {}
+    public void dispose() {
+        PlaceholderGraphics.dispose();
+        Fonts.dispose();
+    }
 }

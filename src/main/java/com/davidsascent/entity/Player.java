@@ -1,7 +1,9 @@
 package com.davidsascent.entity;
 
 import com.davidsascent.Game;
+import com.davidsascent.core.GameSprites;
 import com.davidsascent.core.PlaceholderGraphics;
+import com.davidsascent.core.SpriteSheet;
 import valthorne.Keyboard;
 import valthorne.graphics.Color;
 import valthorne.graphics.texture.TextureBatch;
@@ -13,15 +15,18 @@ import valthorne.graphics.texture.TextureBatch;
  */
 public class Player {
 
-    /** Player dimensions (32x32 sprite size). */
-    public static final float WIDTH = 32;
-    public static final float HEIGHT = 32;
+    /** Player dimensions (48x48 rendered from 32x32 sprite for visibility). */
+    public static final float WIDTH = 48;
+    public static final float HEIGHT = 48;
 
     private float x;
     private float y;
     private float speed;
     private int maxHealth;
     private int health;
+    private boolean moving = false;
+    private float hurtTimer = 0f;
+    private static final float HURT_DURATION = 0.167f;
 
     public Player(float x, float y) {
         this.speed = com.davidsascent.core.BalanceConfig.getFloat("player.speed", 200f);
@@ -45,6 +50,8 @@ public class Player {
         if (Keyboard.isKeyDown(Keyboard.A) || Keyboard.isKeyDown(Keyboard.LEFT)) dx -= 1;
         if (Keyboard.isKeyDown(Keyboard.D) || Keyboard.isKeyDown(Keyboard.RIGHT)) dx += 1;
 
+        moving = (dx != 0 || dy != 0);
+
         // Normalize diagonal movement
         if (dx != 0 && dy != 0) {
             float inv = 1f / (float) Math.sqrt(dx * dx + dy * dy);
@@ -61,14 +68,35 @@ public class Player {
     }
 
     public void update(float delta) {
-        // Reserved for status effects, etc.
+        // Update hurt timer
+        if (hurtTimer > 0) hurtTimer -= delta;
+
+        // Update the active animation
+        SpriteSheet activeAnim;
+        if (hurtTimer > 0) {
+            activeAnim = GameSprites.davidHurt;
+        } else if (moving) {
+            activeAnim = GameSprites.davidWalk;
+        } else {
+            activeAnim = GameSprites.davidIdle;
+        }
+        activeAnim.update(delta);
     }
 
     /**
-     * Render the player.
+     * Render the player using animated sprites.
+     * Scaled 2x from 32px native to 64px on screen for visibility.
      */
     public void render(TextureBatch batch) {
-        PlaceholderGraphics.drawRect(batch, x, y, WIDTH, HEIGHT, Color.BLUE);
+        SpriteSheet activeAnim;
+        if (hurtTimer > 0) {
+            activeAnim = GameSprites.davidHurt;
+        } else if (moving) {
+            activeAnim = GameSprites.davidWalk;
+        } else {
+            activeAnim = GameSprites.davidIdle;
+        }
+        activeAnim.draw(batch, x, y, WIDTH, HEIGHT);
     }
 
     /**
@@ -101,6 +129,8 @@ public class Player {
 
     public void takeDamage(int amount) {
         health = Math.max(0, health - amount);
+        hurtTimer = HURT_DURATION;
+        GameSprites.davidHurt.reset();
     }
 
     public void heal(int amount) {

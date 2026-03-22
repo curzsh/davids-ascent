@@ -1,5 +1,6 @@
 package com.davidsascent.entity;
 
+import com.davidsascent.core.GameSprites;
 import com.davidsascent.core.PlaceholderGraphics;
 import valthorne.graphics.Color;
 import valthorne.graphics.texture.TextureBatch;
@@ -54,14 +55,8 @@ public class XpGem {
 
     public void render(TextureBatch batch) {
         if (!active) return;
-        // Pulsing glow behind the gem
-        float pulse = (float) Math.sin(age * 5f) * 0.3f + 0.7f;
-        float glowSize = size + 6f * pulse;
-        PlaceholderGraphics.drawRect(batch, x - glowSize / 2f, y - glowSize / 2f,
-                                     glowSize, glowSize, GEM_GLOW);
-        // Core gem
-        PlaceholderGraphics.drawRect(batch, x - size / 2f, y - size / 2f,
-                                     size, size, GEM_COLOR);
+        // Draw animated gem sprite (scaled up from 8x8 to size)
+        GameSprites.xpGem.draw(batch, x - size / 2f, y - size / 2f, size, size);
     }
 
     public void deactivate() { active = false; }

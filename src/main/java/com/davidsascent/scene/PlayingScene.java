@@ -3,10 +3,12 @@ package com.davidsascent.scene;
 import com.davidsascent.Game;
 import com.davidsascent.core.Collision;
 import com.davidsascent.core.Fonts;
+import com.davidsascent.core.GameSprites;
 import com.davidsascent.core.PlaceholderGraphics;
 import com.davidsascent.entity.Enemy;
 import com.davidsascent.entity.GoliathBoss;
 import com.davidsascent.entity.Player;
+import valthorne.Keyboard;
 import com.davidsascent.stage.StageData;
 import com.davidsascent.stage.StageManager;
 import com.davidsascent.stage.WaveSpawner;
@@ -63,6 +65,7 @@ public class PlayingScene extends Scene {
     private boolean goliathSpawned = false;
     private boolean waitingForBossDialogue = false;
     private boolean slamDamageDealt = false; // prevents slam hitting every frame
+    private boolean debugSkipHeld = false; // debounce for debug skip key
 
     @Override
     public void init() {
@@ -78,6 +81,7 @@ public class PlayingScene extends Scene {
 
         Window.setSwapInterval(SwapInterval.VSYNC);
         PlaceholderGraphics.init();
+        GameSprites.init();
         Fonts.init();
 
         player = new Player(Game.WORLD_WIDTH / 2f, Game.WORLD_HEIGHT / 2f);
@@ -166,23 +170,60 @@ public class PlayingScene extends Scene {
             return;
         }
 
+        // Debug: press 5 to skip to Goliath boss fight (buffed player, no minions)
+        if (Keyboard.isKeyDown(Keyboard.KEY_5)) {
+            if (!debugSkipHeld && !goliathSpawned) {
+                debugSkipHeld = true;
+                enemySystem.clear();
+                while (!stageManager.isLastStage()) {
+                    stageManager.advanceStage();
+                }
+                stageManager.setPhase(StageManager.Phase.PLAYING);
+                // Start stage but pause spawner — Goliath only, no minions
+                waveSpawner.startStage(stageManager.getCurrentStage());
+                waveSpawner.setPaused(true);
+                enemySystem.clear();
+                hud.setStageLabel("Stage 5: GOLIATH (debug)");
+                // Buff player for testing
+                player.increaseMaxHealth(200);
+                player.setSpeed(300f);
+                // Add all weapons
+                weaponSystem.addWeapon(new com.davidsascent.system.StaffWeapon());
+                weaponSystem.addWeapon(new com.davidsascent.system.ThrowingStonesWeapon());
+                weaponSystem.addWeapon(new com.davidsascent.system.DivineFireWeapon());
+                goliathSpawned = true;
+                spawnGoliath();
+            }
+        } else {
+            debugSkipHeld = false;
+        }
+
         // Player
         player.handleInput(delta);
         player.update(delta);
 
-        // Weapon auto-fire (all active weapons)
+        // Build combined target list (enemies + Goliath if alive)
+        List<Enemy> allTargets = new java.util.ArrayList<>(enemySystem.getEnemies());
+        if (goliathBoss != null && goliathBoss.isAlive()) {
+            allTargets.add(goliathBoss);
+        }
+
+        // Weapon auto-fire (all active weapons, including ring damage vs Goliath)
         weaponSystem.update(delta, player.getCenterX(), player.getCenterY(),
-                           enemySystem.getEnemies(), projectileSystem, damageNumbers);
+                           allTargets, projectileSystem, damageNumbers);
 
         // Projectiles
         projectileSystem.update(delta);
 
         // Enemies
         enemySystem.update(delta, player);
-
-        // Projectile-enemy collisions
-        List<Enemy> killed = projectileSystem.checkCollisions(enemySystem.getEnemies(), damageNumbers);
+        List<Enemy> killed = projectileSystem.checkCollisions(allTargets, damageNumbers);
         for (Enemy e : killed) {
+            if (e == goliathBoss) {
+                // Goliath defeated — victory!
+                Game.getGameScreen().setScene(new VictoryScene(xpSystem.getCurrentLevel()));
+                return;
+            }
             xpSystem.spawnGem(e.getX(), e.getY(), e.getXpValue());
             deathParticles.burst(e.getX(), e.getY(), e.getColor());
         }
@@ -193,12 +234,22 @@ public class PlayingScene extends Scene {
             triggerLevelUp();
         }
 
+        // Update shared sprite animations
+        GameSprites.xpGem.update(delta);
+        GameSprites.slingStone.update(delta);
+
         // Damage numbers + death particles
         damageNumbers.update(delta);
         deathParticles.update(delta);
 
         // Wave spawner
         waveSpawner.update(delta, enemySystem);
+
+        // Check if Goliath was killed by non-projectile weapons (divine fire, staff)
+        if (goliathBoss != null && !goliathBoss.isAlive()) {
+            Game.getGameScreen().setScene(new VictoryScene(xpSystem.getCurrentLevel()));
+            return;
+        }
 
         // Goliath boss logic
         if (goliathBoss != null && goliathBoss.isAlive()) {
@@ -229,14 +280,7 @@ public class PlayingScene extends Scene {
             bossProjectiles.update(delta);
             bossProjectiles.checkPlayerCollisions(player);
 
-            // Player's projectile hits on boss
-            List<Enemy> bossKilled = projectileSystem.checkCollisions(
-                java.util.Collections.singletonList(goliathBoss), damageNumbers);
-            if (!bossKilled.isEmpty()) {
-                // Goliath defeated — victory!
-                Game.getGameScreen().setScene(new VictoryScene(xpSystem.getCurrentLevel()));
-                return;
-            }
+            // Boss projectile damage is now handled in the unified collision check above
         }
 
         // Check stage completion
@@ -283,6 +327,9 @@ public class PlayingScene extends Scene {
         StageManager.Phase phase = stageManager.getCurrentPhase();
 
         if (phase == StageManager.Phase.PLAYING) {
+            // Render tiled ground
+            renderGround(batch);
+
             player.render(batch);
             weaponSystem.render(batch, player.getCenterX(), player.getCenterY());
             enemySystem.render(batch);
@@ -309,7 +356,22 @@ public class PlayingScene extends Scene {
     @Override
     public void dispose() {
         PlaceholderGraphics.dispose();
+        GameSprites.dispose();
         Fonts.dispose();
+    }
+
+    /**
+     * Tile the ground with grass sprites for stage 1, solid color for others.
+     */
+    private void renderGround(TextureBatch batch) {
+        if (GameSprites.grassTile != null && stageManager.getCurrentStageNumber() == 1) {
+            int tileSize = 32;
+            for (int y = 0; y < Game.WORLD_HEIGHT; y += tileSize) {
+                for (int x = 0; x < Game.WORLD_WIDTH; x += tileSize) {
+                    batch.draw(GameSprites.grassTile, x, y, tileSize, tileSize);
+                }
+            }
+        }
     }
 
     // --- Stage lifecycle helpers ---

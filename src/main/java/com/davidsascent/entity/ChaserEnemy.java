@@ -1,5 +1,6 @@
 package com.davidsascent.entity;
 
+import com.davidsascent.core.SpriteSheet;
 import valthorne.graphics.Color;
 
 /**
@@ -13,10 +14,22 @@ public class ChaserEnemy extends Enemy {
         super(x, y, health, speed, damage, xpValue, size, color);
     }
 
+    /**
+     * Set the animated sprite sheet for this enemy.
+     */
+    public void setSpriteSheet(SpriteSheet sheet) {
+        this.spriteSheet = sheet;
+    }
+
     @Override
     public void update(float delta, float playerX, float playerY) {
         if (!alive) return;
         updateCooldowns(delta);
+
+        // Update sprite animation
+        if (spriteSheet != null) {
+            spriteSheet.update(delta);
+        }
 
         // Move toward player
         float dx = playerX - x;
