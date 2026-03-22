@@ -1,5 +1,6 @@
 package com.davidsascent.stage;
 
+import com.davidsascent.stage.StageData.EnemyType;
 import com.davidsascent.stage.StageData.EnemyWave;
 import valthorne.graphics.Color;
 
@@ -77,11 +78,12 @@ public final class StageDatabase {
             "\"The battle is the Lord's, and He will\ngive all of you into our hands.\"\n— 1 Samuel 17:47",
             "The scouts have fallen. But their army draws near.",
             new EnemyWave[] {
-                new EnemyWave(1f,     6,     35,  80f,   12,  10, 22f,  SCOUT,     0.6f),
+                //          startTime, count, hp,  speed, dmg, xp, size, color,   interval, type
+                new EnemyWave(1f,     6,     35,  80f,   12,  10, 22f,  SCOUT,     0.6f, EnemyType.DASHER),
                 new EnemyWave(10f,    4,     40,  70f,   15,  12, 24f,  ARCHER,    0.7f),
-                new EnemyWave(18f,    8,     35,  85f,   12,  10, 22f,  SCOUT,     0.4f),
+                new EnemyWave(18f,    8,     35,  85f,   12,  10, 22f,  SCOUT,     0.4f, EnemyType.DASHER),
                 new EnemyWave(25f,    6,     40,  75f,   15,  12, 24f,  ARCHER,    0.5f),
-                new EnemyWave(32f,    7,     35,  90f,   12,  10, 22f,  SCOUT,     0.3f),
+                new EnemyWave(32f,    7,     35,  90f,   12,  10, 22f,  SCOUT,     0.3f, EnemyType.DASHER),
                 new EnemyWave(38f,    6,     50,  70f,   18,  15, 26f,  ARCHER,    0.5f),
             },
             BORDER_BG
@@ -94,12 +96,13 @@ public final class StageDatabase {
             "\"David grew stronger and stronger,\nwhile the house of Saul grew weaker.\"\n— 2 Samuel 3:1",
             "The army is broken. Only one remains...",
             new EnemyWave[] {
+                //          startTime, count, hp,  speed, dmg, xp, size, color,    interval, type
                 new EnemyWave(1f,     8,     40,  75f,   12,  10, 24f,  SOLDIER,   0.4f),
-                new EnemyWave(8f,     4,     60,  50f,   18,  15, 30f,  SHIELD,    0.6f),
+                new EnemyWave(8f,     4,     80,  40f,   18,  15, 30f,  SHIELD,    0.6f, EnemyType.SHIELD),
                 new EnemyWave(16f,    10,    40,  80f,   12,  10, 24f,  SOLDIER,   0.3f),
-                new EnemyWave(22f,    6,     60,  55f,   18,  15, 30f,  SHIELD,    0.5f),
+                new EnemyWave(22f,    6,     80,  45f,   18,  15, 30f,  SHIELD,    0.5f, EnemyType.SHIELD),
                 new EnemyWave(28f,    12,    45,  85f,   15,  12, 24f,  SOLDIER,   0.25f),
-                new EnemyWave(35f,    8,     60,  60f,   18,  15, 30f,  SHIELD,    0.4f),
+                new EnemyWave(35f,    8,     80,  50f,   18,  15, 30f,  SHIELD,    0.4f, EnemyType.SHIELD),
                 new EnemyWave(42f,    10,    40,  90f,   12,  10, 24f,  SOLDIER,   0.2f),
             },
             BATTLEFIELD_BG
@@ -112,12 +115,15 @@ public final class StageDatabase {
             "\"You come against me with sword and spear,\nbut I come against you in the name\nof the Lord Almighty.\"\n— 1 Samuel 17:45",
             "The giant has fallen!\nDavid's faith has triumphed over impossible odds.",
             new EnemyWave[] {
-                // Goliath fight: guards + the boss (boss will be special later)
+                // Goliath's guard: mix of all enemy types
+                //          startTime, count, hp,  speed, dmg, xp, size, color,    interval, type
                 new EnemyWave(1f,     6,     40,  70f,   12,  10, 24f,  SOLDIER,   0.5f),
-                new EnemyWave(10f,    8,     40,  80f,   12,  10, 24f,  SOLDIER,   0.4f),
-                new EnemyWave(20f,    10,    45,  85f,   15,  12, 24f,  SOLDIER,   0.3f),
-                new EnemyWave(30f,    12,    45,  90f,   15,  12, 24f,  SOLDIER,   0.25f),
-                // TODO: Add Goliath as a boss entity in this stage
+                new EnemyWave(5f,     3,     80,  45f,   18,  15, 30f,  SHIELD,    0.8f, EnemyType.SHIELD),
+                new EnemyWave(12f,    5,     35,  85f,   12,  10, 22f,  SCOUT,     0.4f, EnemyType.DASHER),
+                new EnemyWave(18f,    8,     40,  80f,   12,  10, 24f,  SOLDIER,   0.3f),
+                new EnemyWave(24f,    4,     90,  50f,   20,  18, 32f,  SHIELD,    0.6f, EnemyType.SHIELD),
+                new EnemyWave(30f,    6,     35,  90f,   15,  12, 22f,  SCOUT,     0.3f, EnemyType.DASHER),
+                // Goliath spawns as a boss entity — handled by GoliathBoss (Day 9)
             },
             VALLEY_BG
         );

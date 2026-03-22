@@ -2,6 +2,9 @@ package com.davidsascent.stage;
 
 import com.davidsascent.Game;
 import com.davidsascent.entity.ChaserEnemy;
+import com.davidsascent.entity.DashEnemy;
+import com.davidsascent.entity.Enemy;
+import com.davidsascent.entity.ShieldEnemy;
 import com.davidsascent.system.EnemySystem;
 
 import java.util.Random;
@@ -78,10 +81,18 @@ public class WaveSpawner {
             default -> { x = Game.WORLD_WIDTH + margin; y = random.nextFloat() * Game.WORLD_HEIGHT; }
         }
 
-        enemySystem.addEnemy(new ChaserEnemy(
-            x, y, wave.health, wave.speed, wave.damage,
-            wave.xpValue, wave.size, wave.color
-        ));
+        Enemy enemy = switch (wave.type) {
+            case SHIELD -> new ShieldEnemy(
+                x, y, wave.health, wave.speed, wave.damage,
+                wave.xpValue, wave.size, wave.color);
+            case DASHER -> new DashEnemy(
+                x, y, wave.health, wave.speed, wave.damage,
+                wave.xpValue, wave.size, wave.color);
+            default -> new ChaserEnemy(
+                x, y, wave.health, wave.speed, wave.damage,
+                wave.xpValue, wave.size, wave.color);
+        };
+        enemySystem.addEnemy(enemy);
     }
 
     public boolean isStageComplete() { return stageComplete; }

@@ -36,6 +36,13 @@ public class StageData {
     public EnemyWave[] getWaves() { return waves; }
     public Color getArenaColor() { return arenaColor; }
 
+    /** Enemy behavior types for wave spawning. */
+    public enum EnemyType {
+        CHASER,      // walks straight toward player
+        SHIELD,      // tanky, periodically blocks for 50% damage reduction
+        DASHER       // approaches then charges at high speed
+    }
+
     /**
      * Defines a single wave within a stage.
      */
@@ -49,10 +56,18 @@ public class StageData {
         public final float size;
         public final Color color;
         public final float spawnInterval; // seconds between each enemy in this wave
+        public final EnemyType type;
 
         public EnemyWave(float startTime, int count, int health, float speed,
                          int damage, int xpValue, float size, Color color,
                          float spawnInterval) {
+            this(startTime, count, health, speed, damage, xpValue, size, color,
+                 spawnInterval, EnemyType.CHASER);
+        }
+
+        public EnemyWave(float startTime, int count, int health, float speed,
+                         int damage, int xpValue, float size, Color color,
+                         float spawnInterval, EnemyType type) {
             this.startTime = startTime;
             this.count = count;
             this.health = health;
@@ -62,6 +77,7 @@ public class StageData {
             this.size = size;
             this.color = color;
             this.spawnInterval = spawnInterval;
+            this.type = type;
         }
     }
 }

@@ -1,9 +1,11 @@
 package com.davidsascent.scene;
 
 import com.davidsascent.Game;
+import com.davidsascent.core.Collision;
 import com.davidsascent.core.Fonts;
 import com.davidsascent.core.PlaceholderGraphics;
 import com.davidsascent.entity.Enemy;
+import com.davidsascent.entity.GoliathBoss;
 import com.davidsascent.entity.Player;
 import com.davidsascent.stage.StageData;
 import com.davidsascent.stage.StageManager;
@@ -51,6 +53,11 @@ public class PlayingScene extends Scene {
 
     private boolean inLevelUp = false;
     private Color currentBgColor = Color.BLACK;
+
+    // Goliath boss fight state
+    private GoliathBoss goliathBoss;
+    private boolean goliathSpawned = false;
+    private boolean waitingForGoliath = false;
 
     @Override
     public void init() {
@@ -174,10 +181,47 @@ public class PlayingScene extends Scene {
         // Wave spawner
         waveSpawner.update(delta, enemySystem);
 
+        // Goliath boss logic
+        if (goliathBoss != null && goliathBoss.isAlive()) {
+            goliathBoss.update(delta, player.getCenterX(), player.getCenterY());
+
+            // Slam damage to player
+            if (goliathBoss.isSlamActive()) {
+                float dist = Collision.distance(goliathBoss.getX(), goliathBoss.getY(),
+                    player.getCenterX(), player.getCenterY());
+                if (dist < goliathBoss.getSlamRadius()) {
+                    player.takeDamage(goliathBoss.getSlamDamage());
+                }
+            }
+
+            // Boss contact damage
+            if (Collision.circlesOverlap(
+                    goliathBoss.getX(), goliathBoss.getY(), goliathBoss.getRadius(),
+                    player.getCenterX(), player.getCenterY(), Player.WIDTH / 2f)) {
+                player.takeDamage(goliathBoss.getDamage());
+            }
+
+            // Projectile hits on boss
+            List<Enemy> bossKilled = projectileSystem.checkCollisions(
+                java.util.Collections.singletonList(goliathBoss), damageNumbers);
+            if (!bossKilled.isEmpty()) {
+                xpSystem.spawnGem(goliathBoss.getX(), goliathBoss.getY(), goliathBoss.getXpValue());
+                goliathBoss = null;
+                goliathSpawned = false;
+            }
+        }
+
         // Check stage completion
         if (waveSpawner.isStageComplete()) {
-            stageManager.setPhase(StageManager.Phase.POST_DIALOGUE);
-            showStageDialogue(false);
+            if (stageManager.isLastStage() && !goliathSpawned) {
+                // Stage 5: spawn Goliath after guards are cleared
+                spawnGoliath();
+            } else if (stageManager.isLastStage() && goliathBoss != null && goliathBoss.isAlive()) {
+                // Goliath still alive — don't end stage
+            } else {
+                stageManager.setPhase(StageManager.Phase.POST_DIALOGUE);
+                showStageDialogue(false);
+            }
         }
     }
 
@@ -210,6 +254,9 @@ public class PlayingScene extends Scene {
             player.render(batch);
             weaponSystem.render(batch, player.getCenterX(), player.getCenterY());
             enemySystem.render(batch);
+            if (goliathBoss != null && goliathBoss.isAlive()) {
+                goliathBoss.render(batch);
+            }
             projectileSystem.render(batch);
             xpSystem.render(batch);
             damageNumbers.render(batch);
@@ -257,8 +304,18 @@ public class PlayingScene extends Scene {
         stageManager.setPhase(StageManager.Phase.PLAYING);
         currentBgColor = stage.getArenaColor();
         enemySystem.clear();
+        goliathBoss = null;
+        goliathSpawned = false;
+        waitingForGoliath = false;
         waveSpawner.startStage(stage);
         hud.setStageLabel("Stage " + stage.getStageNumber() + ": " + stage.getName());
+    }
+
+    private void spawnGoliath() {
+        goliathBoss = new GoliathBoss(Game.WORLD_WIDTH / 2f, Game.WORLD_HEIGHT - 100f);
+        // Spear throw uses a separate projectile system (Day 9 — for now charge+slam only)
+        goliathSpawned = true;
+        hud.setStageLabel("Stage 5: GOLIATH");
     }
 
     private void triggerLevelUp() {
