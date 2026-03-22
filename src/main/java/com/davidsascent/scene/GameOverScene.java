@@ -24,6 +24,8 @@ public class GameOverScene extends Scene {
     private float timer = 0f;
 
     private static final Color BG = new Color(0.1f, 0.02f, 0.02f, 1f);
+    private static final Color SCRIPTURE_COLOR = new Color(0.6f, 0.5f, 0.3f, 1f);
+    private static final Color SCRIPTURE_DIM = new Color(0.5f, 0.4f, 0.2f, 1f);
 
     public GameOverScene(int finalLevel, int stageReached) {
         this.finalLevel = finalLevel;
@@ -74,24 +76,34 @@ public class GameOverScene extends Scene {
     public void draw(TextureBatch batch) {
         float cx = Game.WORLD_WIDTH / 2f;
 
-        Fonts.drawCentered(batch, Fonts.large(), "YOU HAVE FALLEN",
-            cx, Game.WORLD_HEIGHT / 2f + 80, Color.RED);
+        Fonts.drawCentered(batch, Fonts.large(), "DO NOT LOSE HEART",
+            cx, Game.WORLD_HEIGHT / 2f + 100, SCRIPTURE_COLOR);
 
-        Fonts.drawCentered(batch, Fonts.medium(), "Stage " + stageReached,
-            cx, Game.WORLD_HEIGHT / 2f + 30, Color.LIGHT_GRAY);
+        Fonts.drawCentered(batch, Fonts.medium(), "Stage " + stageReached + " — Level " + finalLevel,
+            cx, Game.WORLD_HEIGHT / 2f + 55, Color.LIGHT_GRAY);
 
-        Fonts.drawCentered(batch, Fonts.small(), "Level " + finalLevel,
-            cx, Game.WORLD_HEIGHT / 2f + 5, Color.GOLD);
-
-        Fonts.drawCentered(batch, Fonts.small(), "\"Be strong and courageous.\"",
-            cx, Game.WORLD_HEIGHT / 2f - 30, new Color(0.6f, 0.5f, 0.3f, 1f));
+        Fonts.drawCentered(batch, Fonts.small(), "\"Be strong and courageous.",
+            cx, Game.WORLD_HEIGHT / 2f + 15, SCRIPTURE_COLOR);
+        Fonts.drawCentered(batch, Fonts.small(), "Do not be afraid;",
+            cx, Game.WORLD_HEIGHT / 2f - 1, SCRIPTURE_COLOR);
+        Fonts.drawCentered(batch, Fonts.small(), "do not be discouraged,",
+            cx, Game.WORLD_HEIGHT / 2f - 17, SCRIPTURE_COLOR);
+        Fonts.drawCentered(batch, Fonts.small(), "for the Lord your God will be",
+            cx, Game.WORLD_HEIGHT / 2f - 33, SCRIPTURE_COLOR);
+        Fonts.drawCentered(batch, Fonts.small(), "with you wherever you go.\"",
+            cx, Game.WORLD_HEIGHT / 2f - 49, SCRIPTURE_COLOR);
         Fonts.drawCentered(batch, Fonts.small(), "- Joshua 1:9",
-            cx, Game.WORLD_HEIGHT / 2f - 50, new Color(0.5f, 0.4f, 0.2f, 1f));
+            cx, Game.WORLD_HEIGHT / 2f - 72, SCRIPTURE_DIM);
+
+        Fonts.drawCentered(batch, Fonts.small(), "David faced the giant in his heart",
+            cx, Game.WORLD_HEIGHT / 2f - 105, SCRIPTURE_DIM);
+        Fonts.drawCentered(batch, Fonts.small(), "before he ever faced him in the valley.",
+            cx, Game.WORLD_HEIGHT / 2f - 121, SCRIPTURE_DIM);
 
         // Blinking prompt
         if (timer > 1.0f && ((int)(timer * 2)) % 2 == 0) {
             Fonts.drawCentered(batch, Fonts.small(), "Click to try again",
-                cx, Game.WORLD_HEIGHT / 2f - 60, Color.GRAY);
+                cx, Game.WORLD_HEIGHT / 2f - 155, Color.GRAY);
         }
     }
 

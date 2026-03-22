@@ -40,9 +40,9 @@ public final class StageDatabase {
 
     private static StageData stage1_Lion() {
         return new StageData(1, "The Lion",
-            "Young David, son of Jesse, tends his\nfather's sheep in the wilderness.\n\nHe is the youngest of eight brothers,\noverlooked by all — but not by God.\n\nDanger stirs in the tall grass...",
-            "\"The Lord is my shepherd,\nI shall not want.\nHe makes me lie down\nin green pastures.\"\n— Psalm 23:1-2",
-            "The flock is safe.\nDavid's hands are steady,\nhis faith unshaken.\n\nBut darker trials await\nbeyond these hills.",
+            "\"Jesse! Your youngest is still out there —\nthe one who keeps the sheep.\"\n\nDavid, the eighth son of Jesse\nof Bethlehem, tends his father's flock.\nSamuel has anointed him with oil.\nThe Spirit of the Lord is upon him.\n\nBut tonight, something stirs\nin the tall grass.\nThe flock needs a shepherd\nwho will not run.",
+            "\"The Lord is my shepherd, I lack nothing.\nHe makes me lie down in green pastures,\nHe leads me beside quiet waters,\nHe refreshes my soul.\"\n— Psalm 23:1-3",
+            "The lion lay still. The sheep were safe.\nDavid wiped his hands on his cloak\nand counted the flock —\nevery one accounted for.\n\nHis father Jesse heard what happened.\nHe looked at his youngest son differently\nthan he had before.\n\nDarker hills lay ahead.",
             new EnemyWave[] {
                 //          startTime, count, hp,  speed, dmg, xp, size, color,     interval
                 new EnemyWave(1f,     5,     20,  60f,   8,   3,  20f,  SNAKE,     0.8f),
@@ -57,9 +57,9 @@ public final class StageDatabase {
 
     private static StageData stage2_Bear() {
         return new StageData(2, "The Bear",
-            "Word of David's courage reaches\nhis father Jesse.\n\n\"If you can face the lion, my son,\nperhaps you are ready for what\nlies in the rocky hills.\"\n\nThe beasts here are fiercer\nthan any lion.",
-            "\"Your servant has killed both\nthe lion and the bear.\nThe Lord who delivered me from\nthe paw of the lion will deliver\nme from this Philistine.\"\n— 1 Samuel 17:37",
-            "The wilderness is tamed.\nDavid feels a stirring in his spirit —\na calling to something greater.\n\nRumors of war reach the hills.",
+            "\"Your servant has been keeping\nhis father's sheep. When a lion\nor a bear came and carried off\na sheep from the flock, I went\nafter it, struck it, and rescued\nthe sheep from its mouth.\"\n— 1 Samuel 17:34-35\n\nThe rocky hills east of Bethlehem\nare no place for a boy.\nBut David is not merely a boy.",
+            "\"The Lord who rescued me from\nthe paw of the lion and the paw\nof the bear will rescue me from\nthe hand of this Philistine.\"\n— 1 Samuel 17:37",
+            "When he seized it by its hair\nand struck it — that was the moment\nDavid understood.\nHe had not fought alone.\n\nRumor traveled across the hills of Judah.\nA shepherd boy. A lion. A bear.\n\nBut war was coming to the valley,\nand Israel would need\na different kind of courage.",
             new EnemyWave[] {
                 new EnemyWave(1f,     6,     30,  65f,   10,  5,  22f,  WOLF,      0.6f),
                 new EnemyWave(10f,    4,     50,  50f,   15,  8,  30f,  BEAST,     0.8f),
@@ -74,9 +74,9 @@ public final class StageDatabase {
 
     private static StageData stage3_Scouts() {
         return new StageData(3, "The Scouts",
-            "Jesse sends David to the Valley of\nElah with bread for his brothers.\n\nBut at the border, Philistine\nscouts block the way.\n\nThey are fast — watch for\ntheir charges!",
-            "\"The battle is the Lord's,\nand He will give all of you\ninto our hands.\"\n— 1 Samuel 17:47",
-            "The scouts have fallen,\nbut David hears a voice\nechoing across the valley —\n\nA giant's voice,\nmocking the armies of Israel.",
+            "Jesse said to his son David,\n\"Take this bread to your brothers\nat the Valley of Elah.\nSee how they are and bring back\nword from them.\"\n— 1 Samuel 17:17-18\n\nDavid rises before dawn and sets out.\nAt the border, Philistine scouts\nhave blocked the road to Elah.\nThey are fast — watch for their charges!",
+            "\"Do not be afraid of them;\nthe Lord your God himself\nwill fight for you.\"\n— Deuteronomy 3:22",
+            "David reached the Israelite camp.\nHe left the food with the supply keeper\nand ran to find his brothers.\n\nHis brother Eliab's anger burned.\n\"Why have you come here?\nWho is watching those few sheep?\nI know how conceited you are!\"\n\nDavid turned away. But across the valley,\na voice forty days old was still roaring —\na giant's voice that made the army tremble.",
             new EnemyWave[] {
                 //          startTime, count, hp,  speed, dmg, xp, size, color,   interval, type
                 new EnemyWave(1f,     6,     35,  80f,   12,  10, 22f,  SCOUT,     0.6f, EnemyType.DASHER),
@@ -92,9 +92,9 @@ public final class StageDatabase {
 
     private static StageData stage4_Army() {
         return new StageData(4, "The Army",
-            "King Saul offers his armor to David.\nDavid tries it on, but it is too heavy.\n\n\"I cannot go in these,\" David says.\n\"I am not used to them.\"\n\nHe faces the army with only\nhis sling and his faith.\n\nShieldbearers block your attacks!",
-            "\"David said to Saul,\n'Let no one lose heart\non account of this Philistine.\nYour servant will go\nand fight him.'\"\n— 1 Samuel 17:32",
-            "The army is broken.\nSoldiers flee in every direction.\n\nOnly one remains —\nthe champion of Gath.\nThe giant called Goliath.",
+            "King Saul dressed David in his armor —\na coat of bronze, a sword at his side.\n\n\"I cannot go in these,\" David said.\n\"God has not prepared me for armor.\nHe has prepared me for this.\"\n\nHe took them off. He picked up his staff.\nHis sling. He stopped at the brook\nand chose five smooth stones,\nputting them in his shepherd's pouch.\n\nShieldbearers protect the soldiers —\nwatch for the gaps between their shields.",
+            "\"It is God who arms me with strength\nand keeps my way secure.\nHe makes my feet like the feet of a deer;\nHe causes me to stand on the heights.\"\n— Psalm 18:32-33",
+            "The Philistine soldiers broke and ran.\nDavid stood in the valley, breathing hard,\nfive stones in his pouch — four of them\nstill smooth and cool to the touch.\n\nThe armies of Israel watched from the ridge.\nThe Philistines from the opposite hill.\nAnd from the shadow of their lines,\na shadow larger than any man\nstepped forward.",
             new EnemyWave[] {
                 //          startTime, count, hp,  speed, dmg, xp, size, color,    interval, type
                 new EnemyWave(1f,     8,     40,  75f,   12,  10, 24f,  SOLDIER,   0.4f),
@@ -111,9 +111,9 @@ public final class StageDatabase {
 
     private static StageData stage5_Goliath() {
         return new StageData(5, "Goliath",
-            "The Valley of Elah.\nTwo armies watch from the hillsides.\n\nGoliath steps forward — nine feet tall,\ncoated in bronze armor,\na spear like a weaver's beam.\n\n\"Am I a dog, that you come at me\nwith sticks?\" he roars.\n\nThis is the moment David\nwas born for.",
+            "Six cubits and a span. Nine feet tall.\nA coat of bronze — five thousand shekels.\nLegs armored in bronze.\nA javelin slung between his shoulders.\nHis spear shaft like a weaver's beam.\nHis iron point — six hundred shekels.\n\nA shield bearer went ahead of him.\n\nGoliath of Gath looked at David —\nthis ruddy, handsome boy —\nand despised him.\n\nThis is the moment.",
             "\"You come against me with sword\nand spear and javelin,\nbut I come against you in the\nname of the Lord Almighty,\nthe God of the armies of Israel,\nwhom you have defied.\"\n— 1 Samuel 17:45",
-            "The giant has fallen!\n\nDavid, the shepherd boy,\nhas triumphed over impossible odds —\nnot by sword or spear,\nbut by faith alone.",
+            "The stone sank into his forehead.\nGoliath fell facedown on the ground.\n\nDavid had no sword in his hand.\nHe ran and stood over Goliath,\ndrew the giant's own sword —\nand the Philistine army turned and ran.\n\nA shepherd boy had done\nwhat a king could not.\nNot by armor. Not by sword.\nBy five smooth stones, a sling,\nand the name of the Lord Almighty.",
             new EnemyWave[] {
                 // Goliath's guard: mix of all enemy types
                 //          startTime, count, hp,  speed, dmg, xp, size, color,    interval, type

@@ -246,7 +246,7 @@ public class PlayingScene extends Scene {
                 goliathSpawned = true;
                 waitingForBossDialogue = true;
                 dialogueUI.show("THE CHAMPION OF GATH",
-                    "Goliath bellows:\n\"Come to me, boy,\nand I will give your flesh\nto the birds of the air!\"\n\nDavid replies:\n\"This day the Lord will\ndeliver you into my hands.\"");
+                    "Goliath looked David over and despised him.\nHe saw a boy — ruddy and handsome,\ncarrying a stick like a toy.\n\n\"Am I a dog, that you come at me\nwith sticks?\" He cursed David by his gods.\n\"Come here, and I'll give your flesh\nto the birds and the wild animals!\"\n\nDavid called back across the valley:\n\"This day the Lord will deliver you\ninto my hands. The whole world will know\nthere is a God in Israel.\"");
                 return;
             } else if (stageManager.isLastStage() && goliathBoss != null && goliathBoss.isAlive()) {
                 // Goliath still alive — don't end stage

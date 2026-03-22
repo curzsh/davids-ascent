@@ -101,22 +101,25 @@ public class TitleScene extends Scene {
         PlaceholderGraphics.drawRect(batch, cx - lineW / 2f, Game.WORLD_HEIGHT - 215,
             lineW, 1f, SUBTITLE_COLOR);
 
-        // Scripture
+        // Scripture — the verse that frames David's entire story
         Fonts.drawCentered(batch, Fonts.small(),
-            "\"The Lord is my strength",
-            cx, Game.WORLD_HEIGHT - 270, VERSE_COLOR);
+            "\"The Lord does not look at the",
+            cx, Game.WORLD_HEIGHT - 260, VERSE_COLOR);
         Fonts.drawCentered(batch, Fonts.small(),
-            "and my shield;",
-            cx, Game.WORLD_HEIGHT - 288, VERSE_COLOR);
+            "things people look at.",
+            cx, Game.WORLD_HEIGHT - 278, VERSE_COLOR);
         Fonts.drawCentered(batch, Fonts.small(),
-            "my heart trusts in Him,",
-            cx, Game.WORLD_HEIGHT - 306, VERSE_COLOR);
+            "People look at the outward",
+            cx, Game.WORLD_HEIGHT - 296, VERSE_COLOR);
         Fonts.drawCentered(batch, Fonts.small(),
-            "and He helps me.\"",
-            cx, Game.WORLD_HEIGHT - 324, VERSE_COLOR);
+            "appearance, but the Lord",
+            cx, Game.WORLD_HEIGHT - 314, VERSE_COLOR);
         Fonts.drawCentered(batch, Fonts.small(),
-            "- Psalm 28:7",
-            cx, Game.WORLD_HEIGHT - 352, SUBTITLE_COLOR);
+            "looks at the heart.\"",
+            cx, Game.WORLD_HEIGHT - 332, VERSE_COLOR);
+        Fonts.drawCentered(batch, Fonts.small(),
+            "- 1 Samuel 16:7",
+            cx, Game.WORLD_HEIGHT - 358, SUBTITLE_COLOR);
 
         // Sling illustration (simple arc)
         float slingCx = cx;

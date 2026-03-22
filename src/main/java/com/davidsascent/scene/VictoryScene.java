@@ -82,29 +82,40 @@ public class VictoryScene extends Scene {
         // Scripture
         Fonts.drawCentered(batch, Fonts.small(),
             "\"So David triumphed over the",
-            cx, topY - 60, Color.WHITE);
+            cx, topY - 55, Color.WHITE);
         Fonts.drawCentered(batch, Fonts.small(),
-            "Philistine with a sling and a stone;",
-            cx, topY - 80, Color.WHITE);
+            "Philistine with a sling and a stone.",
+            cx, topY - 73, Color.WHITE);
         Fonts.drawCentered(batch, Fonts.small(),
-            "without a sword in his hand he",
-            cx, topY - 100, Color.WHITE);
+            "Without a sword in his hand,",
+            cx, topY - 91, Color.WHITE);
         Fonts.drawCentered(batch, Fonts.small(),
-            "struck down the Philistine",
-            cx, topY - 120, Color.WHITE);
+            "he struck down the Philistine",
+            cx, topY - 109, Color.WHITE);
         Fonts.drawCentered(batch, Fonts.small(),
             "and killed him.\"",
-            cx, topY - 140, Color.WHITE);
+            cx, topY - 127, Color.WHITE);
         Fonts.drawCentered(batch, Fonts.small(),
             "- 1 Samuel 17:50",
-            cx, topY - 170, GOLD_DIM);
+            cx, topY - 155, GOLD_DIM);
+
+        // Narrative coda
+        Fonts.drawCentered(batch, Fonts.small(),
+            "The shepherd who was overlooked",
+            cx, topY - 195, GOLD_DIM);
+        Fonts.drawCentered(batch, Fonts.small(),
+            "became the champion Israel never",
+            cx, topY - 213, GOLD_DIM);
+        Fonts.drawCentered(batch, Fonts.small(),
+            "knew it had.",
+            cx, topY - 231, GOLD_DIM);
 
         // Stats
         Fonts.drawCentered(batch, Fonts.medium(), "Final Level: " + finalLevel,
-            cx, topY - 230, GOLD_DIM);
+            cx, topY - 280, GOLD_DIM);
 
         Fonts.drawCentered(batch, Fonts.medium(), "All 5 stages complete!",
-            cx, topY - 260, Color.GREEN);
+            cx, topY - 310, Color.GREEN);
 
         // Stars decoration (simple rectangles as sparkles)
         float sparkle = (float) Math.sin(timer * 3f) * 0.5f + 0.5f;
