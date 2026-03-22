@@ -15,7 +15,7 @@ import java.util.List;
  */
 public class ProjectileSystem {
 
-    private static final int POOL_SIZE = 500;
+    private static final int POOL_SIZE = 1000;
     private final Projectile[] pool;
 
     public ProjectileSystem() {

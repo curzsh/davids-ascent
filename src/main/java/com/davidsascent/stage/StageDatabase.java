@@ -81,7 +81,7 @@ public final class StageDatabase {
                 new EnemyWave(10f,    4,     40,  70f,   15,  12, 24f,  ARCHER,    0.7f),
                 new EnemyWave(18f,    8,     35,  85f,   12,  10, 22f,  SCOUT,     0.4f),
                 new EnemyWave(25f,    6,     40,  75f,   15,  12, 24f,  ARCHER,    0.5f),
-                new EnemyWave(32f,    10,    35,  90f,   12,  10, 22f,  SCOUT,     0.3f),
+                new EnemyWave(32f,    7,     35,  90f,   12,  10, 22f,  SCOUT,     0.3f),
                 new EnemyWave(38f,    6,     50,  70f,   18,  15, 26f,  ARCHER,    0.5f),
             },
             BORDER_BG
@@ -100,7 +100,7 @@ public final class StageDatabase {
                 new EnemyWave(22f,    6,     60,  55f,   18,  15, 30f,  SHIELD,    0.5f),
                 new EnemyWave(28f,    12,    45,  85f,   15,  12, 24f,  SOLDIER,   0.25f),
                 new EnemyWave(35f,    8,     60,  60f,   18,  15, 30f,  SHIELD,    0.4f),
-                new EnemyWave(42f,    15,    40,  90f,   12,  10, 24f,  SOLDIER,   0.2f),
+                new EnemyWave(42f,    10,    40,  90f,   12,  10, 24f,  SOLDIER,   0.2f),
             },
             BATTLEFIELD_BG
         );

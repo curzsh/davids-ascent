@@ -25,17 +25,14 @@ public class UpgradePool {
 
     private void buildBaseUpgrades() {
         // --- Player blessings (always available) ---
-        baseUpgrades.add(new Upgrade("Psalm of Speed", "Movement speed +30",
-            () -> player.setSpeed(player.getSpeed() + 30f)));
+        baseUpgrades.add(new Upgrade("Fleet Foot", "Movement speed +40",
+            () -> player.setSpeed(player.getSpeed() + 40f)));
 
         baseUpgrades.add(new Upgrade("Stone Skin", "Max health +25",
             () -> player.increaseMaxHealth(25)));
 
         baseUpgrades.add(new Upgrade("Shepherd's Resolve", "Heal 30 HP",
             () -> player.heal(30)));
-
-        baseUpgrades.add(new Upgrade("Divine Swiftness", "Movement speed +50",
-            () -> player.setSpeed(player.getSpeed() + 50f)));
     }
 
     /**
@@ -54,6 +51,10 @@ public class UpgradePool {
             if (!weaponSystem.hasWeapon(ThrowingStonesWeapon.class)) {
                 available.add(new Upgrade("Throwing Stones", "NEW WEAPON: Spread shot in all directions",
                     () -> weaponSystem.addWeapon(new ThrowingStonesWeapon())));
+            }
+            if (!weaponSystem.hasWeapon(DivineFireWeapon.class)) {
+                available.add(new Upgrade("Divine Fire", "NEW WEAPON: Ring of fire damages nearby enemies",
+                    () -> weaponSystem.addWeapon(new DivineFireWeapon())));
             }
         }
 
@@ -86,6 +87,16 @@ public class UpgradePool {
                 () -> stones.increaseDamage(4)));
             available.add(new Upgrade("Rapid Volley", "Throwing Stones fire rate +0.3/s",
                 () -> stones.increaseFireRate(0.3f)));
+        }
+
+        DivineFireWeapon fire = weaponSystem.getWeapon(DivineFireWeapon.class);
+        if (fire != null) {
+            available.add(new Upgrade("Wider Flames", "Divine Fire radius +20",
+                () -> fire.increaseRadius(20f)));
+            available.add(new Upgrade("Holy Blaze", "Divine Fire damage +6",
+                () -> fire.increaseDamage(6)));
+            available.add(new Upgrade("Rapid Burn", "Divine Fire rate +0.2/s",
+                () -> fire.increaseFireRate(0.2f)));
         }
 
         Collections.shuffle(available);

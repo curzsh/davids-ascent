@@ -16,7 +16,7 @@ public class ThrowingStonesWeapon implements Weapon {
     private float fireRate = 0.5f;     // volleys per second
     private float fireTimer = 0f;
     private int stoneCount = 5;        // stones per volley
-    private int damage = 8;
+    private int damage = 12;
     private float projectileSpeed = 300f;
     private float projectileSize = 6f;
     private float projectileLifetime = 1.5f;

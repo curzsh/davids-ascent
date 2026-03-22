@@ -130,9 +130,12 @@ public class PlayingScene extends Scene {
             return;
         }
 
-        // Check player death first
+        // Check player death — transition to game over
         if (player.isDead()) {
-            // TODO: game over scene
+            Game.getGameScreen().setScene(new GameOverScene(
+                xpSystem.getCurrentLevel(),
+                stageManager.getCurrentStageNumber()
+            ));
             return;
         }
 

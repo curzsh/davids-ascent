@@ -11,7 +11,7 @@ import valthorne.graphics.texture.TextureBatch;
  */
 public class XpSystem {
 
-    private static final int GEM_POOL_SIZE = 200;
+    private static final int GEM_POOL_SIZE = 400;
     private final XpGem[] gems;
 
     private int currentXp = 0;

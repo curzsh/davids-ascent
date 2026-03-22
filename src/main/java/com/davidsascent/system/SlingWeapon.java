@@ -13,7 +13,7 @@ import java.util.List;
  */
 public class SlingWeapon implements Weapon {
 
-    private float fireRate = 1.0f;
+    private float fireRate = 1.2f;
     private float fireTimer = 0f;
     private float range = 250f;
     private static final float MIN_RANGE = 40f;
@@ -27,12 +27,15 @@ public class SlingWeapon implements Weapon {
     public void update(float delta, float playerX, float playerY,
                        List<Enemy> enemies, ProjectileSystem projectiles) {
         fireTimer += delta;
+        float interval = 1f / fireRate;
 
-        if (fireTimer >= 1f / fireRate) {
+        if (fireTimer >= interval) {
             Enemy target = findNearestEnemy(playerX, playerY, enemies);
             if (target != null) {
                 fireAt(playerX, playerY, target, projectiles);
                 fireTimer = 0f;
+            } else {
+                fireTimer = interval; // cap so it doesn't burst on first target
             }
         }
     }

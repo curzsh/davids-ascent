@@ -68,10 +68,14 @@ public abstract class Enemy {
 
     /**
      * Push the enemy by a velocity impulse (used for knockback).
+     * Clamped to arena bounds to prevent enemies going off-screen.
      */
     public void push(float pushX, float pushY) {
-        x += pushX * 0.1f; // apply as a small instant displacement
+        x += pushX * 0.1f;
         y += pushY * 0.1f;
+        // Clamp to arena with margin so they can still be reached
+        x = Math.max(-50, Math.min(x, com.davidsascent.Game.WORLD_WIDTH + 50));
+        y = Math.max(-50, Math.min(y, com.davidsascent.Game.WORLD_HEIGHT + 50));
     }
 
     // --- Getters ---
