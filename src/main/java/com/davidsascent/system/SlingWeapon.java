@@ -13,15 +13,25 @@ import java.util.List;
  */
 public class SlingWeapon implements Weapon {
 
-    private float fireRate = 1.2f;
+    private float fireRate;
     private float fireTimer = 0f;
-    private float range = 250f;
-    private static final float MIN_RANGE = 40f;
-    private int damage = 10;
-    private float projectileSpeed = 400f;
-    private float projectileSize = 8f;
-    private float projectileLifetime = 2f;
+    private float range;
+    private final float minRange;
+    private int damage;
+    private float projectileSpeed;
+    private float projectileSize;
+    private float projectileLifetime;
     private static final Color STONE_COLOR = Color.LIGHT_GRAY;
+
+    public SlingWeapon() {
+        this.fireRate = com.davidsascent.core.BalanceConfig.getFloat("sling.fireRate", 1.2f);
+        this.damage = com.davidsascent.core.BalanceConfig.getInt("sling.damage", 10);
+        this.range = com.davidsascent.core.BalanceConfig.getFloat("sling.range", 250f);
+        this.minRange = com.davidsascent.core.BalanceConfig.getFloat("sling.minRange", 40f);
+        this.projectileSpeed = com.davidsascent.core.BalanceConfig.getFloat("sling.projectileSpeed", 400f);
+        this.projectileSize = com.davidsascent.core.BalanceConfig.getFloat("sling.projectileSize", 8f);
+        this.projectileLifetime = com.davidsascent.core.BalanceConfig.getFloat("sling.projectileLifetime", 2f);
+    }
 
     @Override
     public void update(float delta, float playerX, float playerY,
@@ -52,7 +62,7 @@ public class SlingWeapon implements Weapon {
     private Enemy findNearestEnemy(float px, float py, List<Enemy> enemies) {
         Enemy nearest = null;
         float nearestDist = range * range;
-        float minDist = MIN_RANGE * MIN_RANGE;
+        float minDist = minRange * minRange;
 
         for (Enemy e : enemies) {
             if (!e.isAlive()) continue;

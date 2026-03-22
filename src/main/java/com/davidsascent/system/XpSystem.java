@@ -11,23 +11,27 @@ import valthorne.graphics.texture.TextureBatch;
  */
 public class XpSystem {
 
-    private static final int GEM_POOL_SIZE = 400;
+    private final int gemPoolSize;
     private final XpGem[] gems;
 
     private int currentXp = 0;
     private int currentLevel = 1;
-    private int xpToNextLevel = 20;
+    private int xpToNextLevel;
     private boolean levelUpReady = false;
 
     /** XP scaling: each level requires more XP. */
-    private static final float XP_SCALE_FACTOR = 1.3f;
+    private final float xpScaleFactor;
 
     /** Collection radius — slightly larger than magnet to ensure pickup. */
-    private static final float PICKUP_RADIUS = 20f;
+    private final float pickupRadius;
 
     public XpSystem() {
-        gems = new XpGem[GEM_POOL_SIZE];
-        for (int i = 0; i < GEM_POOL_SIZE; i++) {
+        this.gemPoolSize = com.davidsascent.core.BalanceConfig.getInt("xp.gemPoolSize", 400);
+        this.xpToNextLevel = com.davidsascent.core.BalanceConfig.getInt("xp.baseToLevel", 20);
+        this.xpScaleFactor = com.davidsascent.core.BalanceConfig.getFloat("xp.scaleFactor", 1.3f);
+        this.pickupRadius = com.davidsascent.core.BalanceConfig.getFloat("xp.gemPickupRadius", 20f);
+        gems = new XpGem[gemPoolSize];
+        for (int i = 0; i < gemPoolSize; i++) {
             gems[i] = new XpGem();
         }
     }
@@ -58,7 +62,7 @@ public class XpSystem {
 
             // Check collection
             if (Collision.distanceSquared(px, py, gem.getX(), gem.getY())
-                    < PICKUP_RADIUS * PICKUP_RADIUS) {
+                    < pickupRadius * pickupRadius) {
                 currentXp += gem.getValue();
                 gem.deactivate();
 
@@ -76,7 +80,7 @@ public class XpSystem {
     public void consumeLevelUp() {
         currentXp -= xpToNextLevel;
         currentLevel++;
-        xpToNextLevel = (int) (xpToNextLevel * XP_SCALE_FACTOR);
+        xpToNextLevel = (int) (xpToNextLevel * xpScaleFactor);
         levelUpReady = false;
 
         // Check if we have enough for another immediate level-up

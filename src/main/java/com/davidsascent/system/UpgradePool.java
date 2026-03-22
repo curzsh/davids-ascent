@@ -1,5 +1,6 @@
 package com.davidsascent.system;
 
+import com.davidsascent.core.BalanceConfig;
 import com.davidsascent.entity.Player;
 
 import java.util.ArrayList;
@@ -24,15 +25,18 @@ public class UpgradePool {
     }
 
     private void buildBaseUpgrades() {
-        // --- Player blessings (always available) ---
-        baseUpgrades.add(new Upgrade("Fleet Foot", "Movement speed +40",
-            () -> player.setSpeed(player.getSpeed() + 40f)));
+        float fleetFootSpeed = BalanceConfig.getFloat("upgrade.fleetFoot.speed", 40f);
+        int stoneSkinHp = BalanceConfig.getInt("upgrade.stoneSkin.maxHealth", 25);
+        int resolveHeal = BalanceConfig.getInt("upgrade.shepherdsResolve.heal", 30);
 
-        baseUpgrades.add(new Upgrade("Stone Skin", "Max health +25",
-            () -> player.increaseMaxHealth(25)));
+        baseUpgrades.add(new Upgrade("Fleet Foot", "Movement speed +" + (int) fleetFootSpeed,
+            () -> player.setSpeed(player.getSpeed() + fleetFootSpeed)));
 
-        baseUpgrades.add(new Upgrade("Shepherd's Resolve", "Heal 30 HP",
-            () -> player.heal(30)));
+        baseUpgrades.add(new Upgrade("Stone Skin", "Max health +" + stoneSkinHp,
+            () -> player.increaseMaxHealth(stoneSkinHp)));
+
+        baseUpgrades.add(new Upgrade("Shepherd's Resolve", "Heal " + resolveHeal + " HP",
+            () -> player.heal(resolveHeal)));
     }
 
     /**
@@ -61,42 +65,54 @@ public class UpgradePool {
         // Add upgrades for weapons the player already has
         SlingWeapon sling = weaponSystem.getWeapon(SlingWeapon.class);
         if (sling != null) {
-            available.add(new Upgrade("Sharper Stones", "Sling damage +5",
-                () -> sling.increaseDamage(5)));
-            available.add(new Upgrade("Quick Hands", "Sling fire rate +0.5/s",
-                () -> sling.increaseFireRate(0.5f)));
-            available.add(new Upgrade("Eagle Eye", "Sling range +50",
-                () -> sling.increaseRange(50f)));
+            int slingDmg = BalanceConfig.getInt("upgrade.sling.damage", 5);
+            float slingFr = BalanceConfig.getFloat("upgrade.sling.fireRate", 0.5f);
+            float slingRng = BalanceConfig.getFloat("upgrade.sling.range", 50f);
+            available.add(new Upgrade("Sharper Stones", "Sling damage +" + slingDmg,
+                () -> sling.increaseDamage(slingDmg)));
+            available.add(new Upgrade("Quick Hands", "Sling fire rate +" + slingFr + "/s",
+                () -> sling.increaseFireRate(slingFr)));
+            available.add(new Upgrade("Eagle Eye", "Sling range +" + (int) slingRng,
+                () -> sling.increaseRange(slingRng)));
         }
 
         StaffWeapon staff = weaponSystem.getWeapon(StaffWeapon.class);
         if (staff != null) {
-            available.add(new Upgrade("Wider Sweep", "Staff radius +15",
-                () -> staff.increaseRadius(15f)));
-            available.add(new Upgrade("Heavy Strike", "Staff damage +8",
-                () -> staff.increaseDamage(8)));
-            available.add(new Upgrade("Mighty Knockback", "Staff knockback +80",
-                () -> staff.increaseKnockback(80f)));
+            float staffRad = BalanceConfig.getFloat("upgrade.staff.radius", 15f);
+            int staffDmg = BalanceConfig.getInt("upgrade.staff.damage", 8);
+            float staffKb = BalanceConfig.getFloat("upgrade.staff.knockback", 80f);
+            available.add(new Upgrade("Wider Sweep", "Staff radius +" + (int) staffRad,
+                () -> staff.increaseRadius(staffRad)));
+            available.add(new Upgrade("Heavy Strike", "Staff damage +" + staffDmg,
+                () -> staff.increaseDamage(staffDmg)));
+            available.add(new Upgrade("Mighty Knockback", "Staff knockback +" + (int) staffKb,
+                () -> staff.increaseKnockback(staffKb)));
         }
 
-        ThrowingStonesWeapon stones = weaponSystem.getWeapon(ThrowingStonesWeapon.class);
-        if (stones != null) {
-            available.add(new Upgrade("More Stones", "Throwing Stones +2 per volley",
-                () -> stones.increaseStoneCount(2)));
-            available.add(new Upgrade("Sharpened Stones", "Throwing Stones damage +4",
-                () -> stones.increaseDamage(4)));
-            available.add(new Upgrade("Rapid Volley", "Throwing Stones fire rate +0.3/s",
-                () -> stones.increaseFireRate(0.3f)));
+        ThrowingStonesWeapon stonesW = weaponSystem.getWeapon(ThrowingStonesWeapon.class);
+        if (stonesW != null) {
+            int stCnt = BalanceConfig.getInt("upgrade.stones.count", 2);
+            int stDmg = BalanceConfig.getInt("upgrade.stones.damage", 4);
+            float stFr = BalanceConfig.getFloat("upgrade.stones.fireRate", 0.3f);
+            available.add(new Upgrade("More Stones", "Throwing Stones +" + stCnt + " per volley",
+                () -> stonesW.increaseStoneCount(stCnt)));
+            available.add(new Upgrade("Sharpened Stones", "Throwing Stones damage +" + stDmg,
+                () -> stonesW.increaseDamage(stDmg)));
+            available.add(new Upgrade("Rapid Volley", "Throwing Stones fire rate +" + stFr + "/s",
+                () -> stonesW.increaseFireRate(stFr)));
         }
 
-        DivineFireWeapon fire = weaponSystem.getWeapon(DivineFireWeapon.class);
-        if (fire != null) {
-            available.add(new Upgrade("Wider Flames", "Divine Fire radius +20",
-                () -> fire.increaseRadius(20f)));
-            available.add(new Upgrade("Holy Blaze", "Divine Fire damage +6",
-                () -> fire.increaseDamage(6)));
-            available.add(new Upgrade("Rapid Burn", "Divine Fire rate +0.2/s",
-                () -> fire.increaseFireRate(0.2f)));
+        DivineFireWeapon fireW = weaponSystem.getWeapon(DivineFireWeapon.class);
+        if (fireW != null) {
+            float frRad = BalanceConfig.getFloat("upgrade.fire.radius", 20f);
+            int frDmg = BalanceConfig.getInt("upgrade.fire.damage", 6);
+            float frFr = BalanceConfig.getFloat("upgrade.fire.fireRate", 0.2f);
+            available.add(new Upgrade("Wider Flames", "Divine Fire radius +" + (int) frRad,
+                () -> fireW.increaseRadius(frRad)));
+            available.add(new Upgrade("Holy Blaze", "Divine Fire damage +" + frDmg,
+                () -> fireW.increaseDamage(frDmg)));
+            available.add(new Upgrade("Rapid Burn", "Divine Fire rate +" + frFr + "/s",
+                () -> fireW.increaseFireRate(frFr)));
         }
 
         Collections.shuffle(available);

@@ -15,10 +15,17 @@ import java.util.List;
  */
 public class DivineFireWeapon implements Weapon {
 
-    private float radius = 80f;
-    private float ringThickness = 12f;
-    private int damage = 8;
-    private float damageInterval = 0.3f; // seconds between damage ticks
+    private float radius;
+    private float ringThickness;
+    private int damage;
+    private float damageInterval;
+
+    public DivineFireWeapon() {
+        this.radius = com.davidsascent.core.BalanceConfig.getFloat("fire.radius", 80f);
+        this.ringThickness = com.davidsascent.core.BalanceConfig.getFloat("fire.ringThickness", 12f);
+        this.damage = com.davidsascent.core.BalanceConfig.getInt("fire.damage", 8);
+        this.damageInterval = com.davidsascent.core.BalanceConfig.getFloat("fire.damageInterval", 0.3f);
+    }
 
     /** Per-frame rotation for visual spin effect. */
     private float rotation = 0f;

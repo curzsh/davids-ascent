@@ -13,14 +13,23 @@ import java.util.List;
  */
 public class ThrowingStonesWeapon implements Weapon {
 
-    private float fireRate = 0.5f;     // volleys per second
+    private float fireRate;
     private float fireTimer = 0f;
-    private int stoneCount = 5;        // stones per volley
-    private int damage = 12;
-    private float projectileSpeed = 300f;
-    private float projectileSize = 6f;
-    private float projectileLifetime = 1.5f;
+    private int stoneCount;
+    private int damage;
+    private float projectileSpeed;
+    private float projectileSize;
+    private float projectileLifetime;
     private static final Color STONE_COLOR = Color.GOLD;
+
+    public ThrowingStonesWeapon() {
+        this.fireRate = com.davidsascent.core.BalanceConfig.getFloat("stones.fireRate", 0.5f);
+        this.damage = com.davidsascent.core.BalanceConfig.getInt("stones.damage", 12);
+        this.stoneCount = com.davidsascent.core.BalanceConfig.getInt("stones.stoneCount", 5);
+        this.projectileSpeed = com.davidsascent.core.BalanceConfig.getFloat("stones.projectileSpeed", 300f);
+        this.projectileSize = com.davidsascent.core.BalanceConfig.getFloat("stones.projectileSize", 6f);
+        this.projectileLifetime = com.davidsascent.core.BalanceConfig.getFloat("stones.projectileLifetime", 1.5f);
+    }
 
     @Override
     public void update(float delta, float playerX, float playerY,

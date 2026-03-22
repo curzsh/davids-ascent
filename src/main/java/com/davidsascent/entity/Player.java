@@ -19,11 +19,13 @@ public class Player {
 
     private float x;
     private float y;
-    private float speed = 200f; // pixels per second
-    private int maxHealth = 100;
+    private float speed;
+    private int maxHealth;
     private int health;
 
     public Player(float x, float y) {
+        this.speed = com.davidsascent.core.BalanceConfig.getFloat("player.speed", 200f);
+        this.maxHealth = com.davidsascent.core.BalanceConfig.getInt("player.maxHealth", 100);
         this.x = x - WIDTH / 2f;
         this.y = y - HEIGHT / 2f;
         this.health = maxHealth;

@@ -25,6 +25,7 @@ public class Game {
     }
 
     public static void main(String[] args) {
+        com.davidsascent.core.BalanceConfig.load();
         gameScreen = new GameScreen(new PlayingScene());
         JGL.init(gameScreen, "David's Ascent", WORLD_WIDTH, WORLD_HEIGHT);
     }

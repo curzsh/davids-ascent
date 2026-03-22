@@ -15,11 +15,18 @@ import java.util.List;
  */
 public class StaffWeapon implements Weapon {
 
-    private float fireRate = 0.8f;     // sweeps per second
+    private float fireRate;
     private float fireTimer = 0f;
-    private float radius = 60f;        // melee range
-    private int damage = 15;
-    private float knockback = 150f;    // push enemies away on hit
+    private float radius;
+    private int damage;
+    private float knockback;
+
+    public StaffWeapon() {
+        this.fireRate = com.davidsascent.core.BalanceConfig.getFloat("staff.fireRate", 0.8f);
+        this.damage = com.davidsascent.core.BalanceConfig.getInt("staff.damage", 15);
+        this.radius = com.davidsascent.core.BalanceConfig.getFloat("staff.radius", 60f);
+        this.knockback = com.davidsascent.core.BalanceConfig.getFloat("staff.knockback", 150f);
+    }
 
     // Visual flash
     private float flashTimer = 0f;
