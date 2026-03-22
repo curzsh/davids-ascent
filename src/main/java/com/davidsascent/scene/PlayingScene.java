@@ -10,6 +10,7 @@ import com.davidsascent.entity.Player;
 import com.davidsascent.stage.StageData;
 import com.davidsascent.stage.StageManager;
 import com.davidsascent.stage.WaveSpawner;
+import com.davidsascent.system.BossProjectileSystem;
 import com.davidsascent.system.EnemySystem;
 import com.davidsascent.system.ProjectileSystem;
 import com.davidsascent.system.SlingWeapon;
@@ -56,8 +57,8 @@ public class PlayingScene extends Scene {
 
     // Goliath boss fight state
     private GoliathBoss goliathBoss;
+    private BossProjectileSystem bossProjectiles;
     private boolean goliathSpawned = false;
-    private boolean waitingForGoliath = false;
 
     @Override
     public void init() {
@@ -85,7 +86,9 @@ public class PlayingScene extends Scene {
         levelUpUI = new LevelUpUI();
         dialogueUI = new DialogueUI();
         hud = new HUD();
+        hud.setWeaponSystem(weaponSystem);
         damageNumbers = new DamageNumberSystem();
+        bossProjectiles = new BossProjectileSystem();
 
         stageManager = new StageManager();
         waveSpawner = new WaveSpawner();
@@ -201,13 +204,17 @@ public class PlayingScene extends Scene {
                 player.takeDamage(goliathBoss.getDamage());
             }
 
-            // Projectile hits on boss
+            // Boss spear projectiles hit player
+            bossProjectiles.update(delta);
+            bossProjectiles.checkPlayerCollisions(player);
+
+            // Player's projectile hits on boss
             List<Enemy> bossKilled = projectileSystem.checkCollisions(
                 java.util.Collections.singletonList(goliathBoss), damageNumbers);
             if (!bossKilled.isEmpty()) {
-                xpSystem.spawnGem(goliathBoss.getX(), goliathBoss.getY(), goliathBoss.getXpValue());
-                goliathBoss = null;
-                goliathSpawned = false;
+                // Goliath defeated — victory!
+                Game.getGameScreen().setScene(new VictoryScene(xpSystem.getCurrentLevel()));
+                return;
             }
         }
 
@@ -256,6 +263,7 @@ public class PlayingScene extends Scene {
             enemySystem.render(batch);
             if (goliathBoss != null && goliathBoss.isAlive()) {
                 goliathBoss.render(batch);
+                bossProjectiles.render(batch);
             }
             projectileSystem.render(batch);
             xpSystem.render(batch);
@@ -306,14 +314,17 @@ public class PlayingScene extends Scene {
         enemySystem.clear();
         goliathBoss = null;
         goliathSpawned = false;
-        waitingForGoliath = false;
+        bossProjectiles.clear();
         waveSpawner.startStage(stage);
         hud.setStageLabel("Stage " + stage.getStageNumber() + ": " + stage.getName());
     }
 
     private void spawnGoliath() {
         goliathBoss = new GoliathBoss(Game.WORLD_WIDTH / 2f, Game.WORLD_HEIGHT - 100f);
-        // Spear throw uses a separate projectile system (Day 9 — for now charge+slam only)
+        bossProjectiles.clear();
+        goliathBoss.setSpearCallback((x, y, velX, velY, dmg) ->
+            bossProjectiles.spawn(x, y, velX, velY, dmg, 12f, 3f,
+                new Color(0.6f, 0.3f, 0.1f, 1f)));
         goliathSpawned = true;
         hud.setStageLabel("Stage 5: GOLIATH");
     }

@@ -83,6 +83,11 @@ public class GameOverScene extends Scene {
         Fonts.drawCentered(batch, Fonts.small(), "Level " + finalLevel,
             cx, Game.WORLD_HEIGHT / 2f + 5, Color.GOLD);
 
+        Fonts.drawCentered(batch, Fonts.small(), "\"Be strong and courageous.\"",
+            cx, Game.WORLD_HEIGHT / 2f - 30, new Color(0.6f, 0.5f, 0.3f, 1f));
+        Fonts.drawCentered(batch, Fonts.small(), "- Joshua 1:9",
+            cx, Game.WORLD_HEIGHT / 2f - 50, new Color(0.5f, 0.4f, 0.2f, 1f));
+
         // Blinking prompt
         if (timer > 1.0f && ((int)(timer * 2)) % 2 == 0) {
             Fonts.drawCentered(batch, Fonts.small(), "Click to try again",
