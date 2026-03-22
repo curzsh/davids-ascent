@@ -18,6 +18,7 @@ public class ProjectileSystem {
 
     private static final int POOL_SIZE = 1000;
     private final Projectile[] pool;
+    private final List<Enemy> killedThisFrame = new ArrayList<>();
 
     public ProjectileSystem() {
         pool = new Projectile[POOL_SIZE];
@@ -55,7 +56,8 @@ public class ProjectileSystem {
      * @return list of enemies killed this frame (for XP drops)
      */
     public List<Enemy> checkCollisions(List<Enemy> enemies, DamageNumberSystem dmgNumbers) {
-        List<Enemy> killed = new ArrayList<>();
+        killedThisFrame.clear();
+        List<Enemy> killed = killedThisFrame;
 
         for (Projectile p : pool) {
             if (!p.isActive()) continue;

@@ -119,6 +119,6 @@ public class UpgradePool {
         }
 
         Collections.shuffle(available);
-        return available.subList(0, Math.min(count, available.size()));
+        return new ArrayList<>(available.subList(0, Math.min(count, available.size())));
     }
 }

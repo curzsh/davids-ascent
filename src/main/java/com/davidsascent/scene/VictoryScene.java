@@ -25,6 +25,7 @@ public class VictoryScene extends Scene {
     private static final Color BG = new Color(0.02f, 0.04f, 0.08f, 1f);
     private static final Color GOLD_BRIGHT = new Color(1f, 0.85f, 0.3f, 1f);
     private static final Color GOLD_DIM = new Color(0.8f, 0.65f, 0.2f, 1f);
+    private final Color sparkleColor = new Color(1f, 1f, 1f, 1f);
 
     public VictoryScene(int finalLevel) {
         this.finalLevel = finalLevel;
@@ -107,7 +108,7 @@ public class VictoryScene extends Scene {
 
         // Stars decoration (simple rectangles as sparkles)
         float sparkle = (float) Math.sin(timer * 3f) * 0.5f + 0.5f;
-        Color sparkleColor = new Color(1f, 1f, sparkle, sparkle * 0.8f);
+        sparkleColor.set(1f, 1f, sparkle, sparkle * 0.8f);
         for (int i = 0; i < 8; i++) {
             float angle = (float)(i * Math.PI * 2 / 8 + timer * 0.5f);
             float sx = cx + (float) Math.cos(angle) * 180f;

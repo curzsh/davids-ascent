@@ -26,6 +26,7 @@ public class TitleScene extends Scene {
     private static final Color SUBTITLE_COLOR = new Color(0.7f, 0.6f, 0.3f, 1f);
     private static final Color VERSE_COLOR = new Color(0.6f, 0.6f, 0.7f, 1f);
     private static final Color STAR_COLOR = new Color(1f, 1f, 0.8f, 0.4f);
+    private static final Color HINT_COLOR = new Color(0.4f, 0.4f, 0.5f, 1f);
 
     // Decorative stars
     private final float[] starX = new float[30];
@@ -140,7 +141,7 @@ public class TitleScene extends Scene {
 
         // Controls hint
         Fonts.drawCentered(batch, Fonts.small(), "WASD to move - Weapons fire automatically",
-            cx, 40, new Color(0.4f, 0.4f, 0.5f, 1f));
+            cx, 40, HINT_COLOR);
     }
 
     @Override

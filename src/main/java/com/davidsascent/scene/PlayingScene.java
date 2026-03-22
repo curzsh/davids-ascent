@@ -62,6 +62,7 @@ public class PlayingScene extends Scene {
     private BossProjectileSystem bossProjectiles;
     private boolean goliathSpawned = false;
     private boolean waitingForBossDialogue = false;
+    private boolean slamDamageDealt = false; // prevents slam hitting every frame
 
     @Override
     public void init() {
@@ -203,13 +204,18 @@ public class PlayingScene extends Scene {
         if (goliathBoss != null && goliathBoss.isAlive()) {
             goliathBoss.update(delta, player.getCenterX(), player.getCenterY());
 
-            // Slam damage to player
+            // Slam damage to player (once per slam, not every frame)
             if (goliathBoss.isSlamActive()) {
-                float dist = Collision.distance(goliathBoss.getX(), goliathBoss.getY(),
-                    player.getCenterX(), player.getCenterY());
-                if (dist < goliathBoss.getSlamRadius()) {
-                    player.takeDamage(goliathBoss.getSlamDamage());
+                if (!slamDamageDealt) {
+                    float dist = Collision.distance(goliathBoss.getX(), goliathBoss.getY(),
+                        player.getCenterX(), player.getCenterY());
+                    if (dist < goliathBoss.getSlamRadius()) {
+                        player.takeDamage(goliathBoss.getSlamDamage());
+                    }
+                    slamDamageDealt = true;
                 }
+            } else {
+                slamDamageDealt = false;
             }
 
             // Boss contact damage
