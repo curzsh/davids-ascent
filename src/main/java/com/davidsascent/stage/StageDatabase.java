@@ -45,11 +45,11 @@ public final class StageDatabase {
             "The flock is safe.\nDavid's hands are steady,\nhis faith unshaken.\n\nBut darker trials await\nbeyond these hills.",
             new EnemyWave[] {
                 //          startTime, count, hp,  speed, dmg, xp, size, color,     interval
-                new EnemyWave(1f,     5,     20,  60f,   8,   5,  20f,  SNAKE,     0.8f),
-                new EnemyWave(8f,     6,     25,  70f,   10,  8,  22f,  WOLF,      0.7f),
-                new EnemyWave(18f,    4,     40,  55f,   15,  12, 28f,  LION,      1.0f),
-                new EnemyWave(28f,    8,     25,  75f,   10,  8,  22f,  WOLF,      0.5f),
-                new EnemyWave(35f,    3,     50,  50f,   18,  15, 30f,  LION,      0.8f),
+                new EnemyWave(1f,     5,     20,  60f,   8,   3,  20f,  SNAKE,     0.8f),
+                new EnemyWave(8f,     6,     25,  70f,   10,  5,  22f,  WOLF,      0.7f),
+                new EnemyWave(18f,    4,     40,  55f,   15,  8,  28f,  LION,      1.0f),
+                new EnemyWave(28f,    8,     25,  75f,   10,  5,  22f,  WOLF,      0.5f),
+                new EnemyWave(35f,    3,     50,  50f,   18,  10, 30f,  LION,      0.8f),
             },
             WILDERNESS_BG
         );
@@ -61,12 +61,12 @@ public final class StageDatabase {
             "\"Your servant has killed both\nthe lion and the bear.\nThe Lord who delivered me from\nthe paw of the lion will deliver\nme from this Philistine.\"\n— 1 Samuel 17:37",
             "The wilderness is tamed.\nDavid feels a stirring in his spirit —\na calling to something greater.\n\nRumors of war reach the hills.",
             new EnemyWave[] {
-                new EnemyWave(1f,     6,     30,  65f,   10,  8,  22f,  WOLF,      0.6f),
-                new EnemyWave(10f,    4,     50,  50f,   15,  12, 30f,  BEAST,     0.8f),
-                new EnemyWave(18f,    3,     70,  45f,   20,  18, 34f,  BEAR,      1.0f),
-                new EnemyWave(26f,    8,     30,  80f,   10,  8,  22f,  WOLF,      0.4f),
-                new EnemyWave(32f,    5,     70,  50f,   20,  18, 34f,  BEAR,      0.7f),
-                new EnemyWave(40f,    2,     90,  40f,   25,  25, 38f,  BEAR,      1.0f),
+                new EnemyWave(1f,     6,     30,  65f,   10,  5,  22f,  WOLF,      0.6f),
+                new EnemyWave(10f,    4,     50,  50f,   15,  8,  30f,  BEAST,     0.8f),
+                new EnemyWave(18f,    3,     70,  45f,   20,  12, 34f,  BEAR,      1.0f),
+                new EnemyWave(26f,    8,     30,  80f,   10,  5,  22f,  WOLF,      0.4f),
+                new EnemyWave(32f,    5,     70,  50f,   20,  12, 34f,  BEAR,      0.7f),
+                new EnemyWave(40f,    2,     70,  40f,   25,  18, 38f,  BEAR,      1.0f),
             },
             ROCKY_BG
         );

@@ -36,7 +36,7 @@ public class UpgradePool {
             () -> player.increaseMaxHealth(stoneSkinHp)));
 
         baseUpgrades.add(new Upgrade("Shepherd's Resolve", "Heal " + resolveHeal + " HP",
-            () -> player.heal(resolveHeal)));
+            () -> player.heal(Math.min(resolveHeal, (int)(player.getMaxHealth() * 0.3f)))));
     }
 
     /**
@@ -81,12 +81,15 @@ public class UpgradePool {
             float staffRad = BalanceConfig.getFloat("upgrade.staff.radius", 15f);
             int staffDmg = BalanceConfig.getInt("upgrade.staff.damage", 8);
             float staffKb = BalanceConfig.getFloat("upgrade.staff.knockback", 80f);
+            float staffFr = BalanceConfig.getFloat("upgrade.staff.fireRate", 0.3f);
             available.add(new Upgrade("Wider Sweep", "Staff radius +" + (int) staffRad,
                 () -> staff.increaseRadius(staffRad)));
             available.add(new Upgrade("Heavy Strike", "Staff damage +" + staffDmg,
                 () -> staff.increaseDamage(staffDmg)));
             available.add(new Upgrade("Mighty Knockback", "Staff knockback +" + (int) staffKb,
                 () -> staff.increaseKnockback(staffKb)));
+            available.add(new Upgrade("Swift Staff", "Staff attack speed +" + staffFr + "/s",
+                () -> staff.increaseFireRate(staffFr)));
         }
 
         ThrowingStonesWeapon stonesW = weaponSystem.getWeapon(ThrowingStonesWeapon.class);
