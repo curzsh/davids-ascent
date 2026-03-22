@@ -59,6 +59,7 @@ public class PlayingScene extends Scene {
     private GoliathBoss goliathBoss;
     private BossProjectileSystem bossProjectiles;
     private boolean goliathSpawned = false;
+    private boolean waitingForBossDialogue = false;
 
     @Override
     public void init() {
@@ -143,6 +144,15 @@ public class PlayingScene extends Scene {
             return;
         }
 
+        // Boss confrontation dialogue
+        if (waitingForBossDialogue) {
+            if (dialogueUI.update(delta)) {
+                waitingForBossDialogue = false;
+                spawnGoliath();
+            }
+            return;
+        }
+
         // Check player death — transition to game over
         if (player.isDead()) {
             Game.getGameScreen().setScene(new GameOverScene(
@@ -221,8 +231,12 @@ public class PlayingScene extends Scene {
         // Check stage completion
         if (waveSpawner.isStageComplete()) {
             if (stageManager.isLastStage() && !goliathSpawned) {
-                // Stage 5: spawn Goliath after guards are cleared
-                spawnGoliath();
+                // Stage 5: show confrontation dialogue, then spawn Goliath
+                goliathSpawned = true;
+                waitingForBossDialogue = true;
+                dialogueUI.show("THE CHAMPION OF GATH",
+                    "Goliath bellows:\n\"Come to me, boy,\nand I will give your flesh\nto the birds of the air!\"\n\nDavid replies:\n\"This day the Lord will\ndeliver you into my hands.\"");
+                return;
             } else if (stageManager.isLastStage() && goliathBoss != null && goliathBoss.isAlive()) {
                 // Goliath still alive — don't end stage
             } else {
@@ -314,6 +328,7 @@ public class PlayingScene extends Scene {
         enemySystem.clear();
         goliathBoss = null;
         goliathSpawned = false;
+        waitingForBossDialogue = false;
         bossProjectiles.clear();
         waveSpawner.startStage(stage);
         hud.setStageLabel("Stage " + stage.getStageNumber() + ": " + stage.getName());

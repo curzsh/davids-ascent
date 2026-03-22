@@ -67,7 +67,7 @@ public class GoliathBoss extends Enemy {
     }
 
     public GoliathBoss(float x, float y) {
-        super(x, y, 500, 35f, 30, 100, BOSS_WIDTH, BODY_COLOR);
+        super(x, y, 350, 38f, 25, 100, BOSS_WIDTH, BODY_COLOR);
         this.width = BOSS_WIDTH;
         this.height = BOSS_HEIGHT;
         this.radius = BOSS_WIDTH / 2f;
