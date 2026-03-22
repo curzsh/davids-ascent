@@ -15,9 +15,9 @@ import valthorne.graphics.texture.TextureBatch;
  */
 public class Player {
 
-    /** Player dimensions (48x48 rendered from 32x32 sprite for visibility). */
-    public static final float WIDTH = 48;
-    public static final float HEIGHT = 48;
+    /** Player dimensions (64x64 rendered from 32x32 sprite for visibility). */
+    public static final float WIDTH = 64;
+    public static final float HEIGHT = 64;
 
     private float x;
     private float y;

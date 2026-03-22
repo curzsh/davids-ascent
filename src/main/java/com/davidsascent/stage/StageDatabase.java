@@ -45,11 +45,11 @@ public final class StageDatabase {
             "The lion lay still. The sheep were safe.\nDavid wiped his hands on his cloak\nand counted the flock —\nevery one accounted for.\n\nHis father Jesse heard what happened.\nHe looked at his youngest son differently\nthan he had before.\n\nDarker hills lay ahead.",
             new EnemyWave[] {
                 //          startTime, count, hp,  speed, dmg, xp, size, color,     interval
-                new EnemyWave(1f,     5,     20,  60f,   8,   3,  32f,  SNAKE,     0.8f),
-                new EnemyWave(8f,     6,     25,  70f,   10,  5,  36f,  WOLF,      0.7f),
-                new EnemyWave(18f,    4,     40,  55f,   15,  8,  42f,  LION,      1.0f),
-                new EnemyWave(28f,    8,     25,  75f,   10,  5,  36f,  WOLF,      0.5f),
-                new EnemyWave(35f,    3,     50,  50f,   18,  10, 44f,  LION,      0.8f),
+                new EnemyWave(1f,     5,     20,  60f,   8,   3,  48f,  SNAKE,     0.8f),
+                new EnemyWave(8f,     6,     25,  70f,   10,  5,  48f,  WOLF,      0.7f),
+                new EnemyWave(18f,    4,     40,  55f,   15,  8,  64f,  LION,      1.0f),
+                new EnemyWave(28f,    8,     25,  75f,   10,  5,  48f,  WOLF,      0.5f),
+                new EnemyWave(35f,    3,     50,  50f,   18,  10, 64f,  LION,      0.8f),
             },
             WILDERNESS_BG
         );
@@ -61,12 +61,12 @@ public final class StageDatabase {
             "\"The Lord who rescued me from\nthe paw of the lion and the paw\nof the bear will rescue me from\nthe hand of this Philistine.\"\n— 1 Samuel 17:37",
             "When he seized it by its hair\nand struck it — that was the moment\nDavid understood.\nHe had not fought alone.\n\nRumor traveled across the hills of Judah.\nA shepherd boy. A lion. A bear.\n\nBut war was coming to the valley,\nand Israel would need\na different kind of courage.",
             new EnemyWave[] {
-                new EnemyWave(1f,     6,     30,  65f,   10,  5,  36f,  WOLF,      0.6f),
-                new EnemyWave(10f,    4,     50,  50f,   15,  8,  44f,  BEAST,     0.8f),
-                new EnemyWave(18f,    3,     70,  45f,   20,  12, 48f,  BEAR,      1.0f),
-                new EnemyWave(26f,    8,     30,  80f,   10,  5,  36f,  WOLF,      0.4f),
-                new EnemyWave(32f,    5,     70,  50f,   20,  12, 48f,  BEAR,      0.7f),
-                new EnemyWave(40f,    2,     70,  40f,   25,  18, 52f,  BEAR,      1.0f),
+                new EnemyWave(1f,     6,     30,  65f,   10,  5,  48f,  WOLF,      0.6f),
+                new EnemyWave(10f,    4,     50,  50f,   15,  8,  64f,  BEAST,     0.8f),
+                new EnemyWave(18f,    3,     70,  45f,   20,  12, 64f,  BEAR,      1.0f),
+                new EnemyWave(26f,    8,     30,  80f,   10,  5,  48f,  WOLF,      0.4f),
+                new EnemyWave(32f,    5,     70,  50f,   20,  12, 64f,  BEAR,      0.7f),
+                new EnemyWave(40f,    2,     70,  40f,   25,  18, 72f,  BEAR,      1.0f),
             },
             ROCKY_BG
         );
@@ -79,12 +79,12 @@ public final class StageDatabase {
             "David reached the Israelite camp.\nHe left the food with the supply keeper\nand ran to find his brothers.\n\nHis brother Eliab's anger burned.\n\"Why have you come here?\nWho is watching those few sheep?\nI know how conceited you are!\"\n\nDavid turned away. But across the valley,\na voice forty days old was still roaring —\na giant's voice that made the army tremble.",
             new EnemyWave[] {
                 //          startTime, count, hp,  speed, dmg, xp, size, color,   interval, type
-                new EnemyWave(1f,     6,     35,  80f,   12,  10, 36f,  SCOUT,     0.6f, EnemyType.DASHER),
-                new EnemyWave(10f,    4,     40,  70f,   15,  12, 38f,  ARCHER,    0.7f),
-                new EnemyWave(18f,    8,     35,  85f,   12,  10, 36f,  SCOUT,     0.4f, EnemyType.DASHER),
-                new EnemyWave(25f,    6,     40,  75f,   15,  12, 38f,  ARCHER,    0.5f),
-                new EnemyWave(32f,    7,     35,  90f,   12,  10, 36f,  SCOUT,     0.3f, EnemyType.DASHER),
-                new EnemyWave(38f,    6,     50,  70f,   18,  15, 40f,  ARCHER,    0.5f),
+                new EnemyWave(1f,     6,     35,  80f,   12,  10, 48f,  SCOUT,     0.6f, EnemyType.DASHER),
+                new EnemyWave(10f,    4,     40,  70f,   15,  12, 52f,  ARCHER,    0.7f),
+                new EnemyWave(18f,    8,     35,  85f,   12,  10, 48f,  SCOUT,     0.4f, EnemyType.DASHER),
+                new EnemyWave(25f,    6,     40,  75f,   15,  12, 52f,  ARCHER,    0.5f),
+                new EnemyWave(32f,    7,     35,  90f,   12,  10, 48f,  SCOUT,     0.3f, EnemyType.DASHER),
+                new EnemyWave(38f,    6,     50,  70f,   18,  15, 56f,  ARCHER,    0.5f),
             },
             BORDER_BG
         );
@@ -97,13 +97,13 @@ public final class StageDatabase {
             "The Philistine soldiers broke and ran.\nDavid stood in the valley, breathing hard,\nfive stones in his pouch — four of them\nstill smooth and cool to the touch.\n\nThe armies of Israel watched from the ridge.\nThe Philistines from the opposite hill.\nAnd from the shadow of their lines,\na shadow larger than any man\nstepped forward.",
             new EnemyWave[] {
                 //          startTime, count, hp,  speed, dmg, xp, size, color,    interval, type
-                new EnemyWave(1f,     8,     40,  75f,   12,  10, 38f,  SOLDIER,   0.4f),
-                new EnemyWave(8f,     4,     60,  42f,   16,  15, 44f,  SHIELD,    0.6f, EnemyType.SHIELD),
-                new EnemyWave(16f,    10,    40,  80f,   12,  10, 38f,  SOLDIER,   0.3f),
-                new EnemyWave(22f,    6,     65,  45f,   16,  15, 44f,  SHIELD,    0.5f, EnemyType.SHIELD),
-                new EnemyWave(28f,    12,    45,  85f,   15,  12, 38f,  SOLDIER,   0.25f),
-                new EnemyWave(35f,    8,     65,  48f,   16,  15, 44f,  SHIELD,    0.4f, EnemyType.SHIELD),
-                new EnemyWave(42f,    10,    40,  90f,   12,  10, 38f,  SOLDIER,   0.2f),
+                new EnemyWave(1f,     8,     40,  75f,   12,  10, 56f,  SOLDIER,   0.4f),
+                new EnemyWave(8f,     4,     60,  42f,   16,  15, 64f,  SHIELD,    0.6f, EnemyType.SHIELD),
+                new EnemyWave(16f,    10,    40,  80f,   12,  10, 56f,  SOLDIER,   0.3f),
+                new EnemyWave(22f,    6,     65,  45f,   16,  15, 64f,  SHIELD,    0.5f, EnemyType.SHIELD),
+                new EnemyWave(28f,    12,    45,  85f,   15,  12, 56f,  SOLDIER,   0.25f),
+                new EnemyWave(35f,    8,     65,  48f,   16,  15, 64f,  SHIELD,    0.4f, EnemyType.SHIELD),
+                new EnemyWave(42f,    10,    40,  90f,   12,  10, 56f,  SOLDIER,   0.2f),
             },
             BATTLEFIELD_BG
         );
@@ -117,12 +117,12 @@ public final class StageDatabase {
             new EnemyWave[] {
                 // Goliath's guard: mix of all enemy types
                 //          startTime, count, hp,  speed, dmg, xp, size, color,    interval, type
-                new EnemyWave(1f,     6,     40,  70f,   12,  10, 38f,  SOLDIER,   0.5f),
-                new EnemyWave(5f,     3,     60,  45f,   16,  15, 44f,  SHIELD,    0.8f, EnemyType.SHIELD),
-                new EnemyWave(12f,    5,     35,  85f,   12,  10, 36f,  SCOUT,     0.4f, EnemyType.DASHER),
-                new EnemyWave(18f,    8,     40,  80f,   12,  10, 38f,  SOLDIER,   0.3f),
-                new EnemyWave(24f,    4,     70,  50f,   18,  18, 46f,  SHIELD,    0.6f, EnemyType.SHIELD),
-                new EnemyWave(30f,    6,     35,  90f,   15,  12, 36f,  SCOUT,     0.3f, EnemyType.DASHER),
+                new EnemyWave(1f,     6,     40,  70f,   12,  10, 56f,  SOLDIER,   0.5f),
+                new EnemyWave(5f,     3,     60,  45f,   16,  15, 64f,  SHIELD,    0.8f, EnemyType.SHIELD),
+                new EnemyWave(12f,    5,     35,  85f,   12,  10, 48f,  SCOUT,     0.4f, EnemyType.DASHER),
+                new EnemyWave(18f,    8,     40,  80f,   12,  10, 56f,  SOLDIER,   0.3f),
+                new EnemyWave(24f,    4,     70,  50f,   18,  18, 72f,  SHIELD,    0.6f, EnemyType.SHIELD),
+                new EnemyWave(30f,    6,     35,  90f,   15,  12, 48f,  SCOUT,     0.3f, EnemyType.DASHER),
                 // Goliath spawns as a boss entity — handled by GoliathBoss (Day 9)
             },
             VALLEY_BG

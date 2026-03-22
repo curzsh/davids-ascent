@@ -2,6 +2,7 @@ package com.davidsascent.entity;
 
 import com.davidsascent.Game;
 import com.davidsascent.core.Fonts;
+import com.davidsascent.core.GameSprites;
 import com.davidsascent.core.PlaceholderGraphics;
 import valthorne.graphics.Color;
 import valthorne.graphics.texture.TextureBatch;
@@ -20,8 +21,8 @@ public class GoliathBoss extends Enemy {
     private enum AttackState { IDLE, CHARGE, SLAM, THROW, COOLDOWN }
 
     // --- Size ---
-    private static final float BOSS_WIDTH = 64f;
-    private static final float BOSS_HEIGHT = 80f;
+    private static final float BOSS_WIDTH = 96f;
+    private static final float BOSS_HEIGHT = 120f;
 
     // --- Timing ---
     private static final float ATTACK_COOLDOWN_P1 = 2.5f;
@@ -82,6 +83,7 @@ public class GoliathBoss extends Enemy {
     public void update(float delta, float playerX, float playerY) {
         if (!alive) return;
         updateCooldowns(delta);
+        if (GameSprites.goliathIdle != null) GameSprites.goliathIdle.update(delta);
         if (slamFlashTimer > 0) slamFlashTimer -= delta;
 
         float hpPercent = (float) health / maxHealth;
@@ -282,15 +284,18 @@ public class GoliathBoss extends Enemy {
                 SLAM_RADIUS * 2, SLAM_RADIUS * 2, SLAM_COLOR);
         }
 
-        // Main body (large rectangle)
-        PlaceholderGraphics.drawRect(batch, x - width / 2f, y - height / 2f,
-                                     width, height, bodyColor);
-
-        // Armor overlay (smaller, centered)
-        float armorW = width * 0.7f;
-        float armorH = height * 0.5f;
-        PlaceholderGraphics.drawRect(batch, x - armorW / 2f, y - armorH / 2f,
-                                     armorW, armorH, ARMOR_COLOR);
+        // Main body — use sprite if available, otherwise placeholder
+        if (GameSprites.goliathIdle != null) {
+            GameSprites.goliathIdle.draw(batch, x - width / 2f, y - height / 2f,
+                                         width, height);
+        } else {
+            PlaceholderGraphics.drawRect(batch, x - width / 2f, y - height / 2f,
+                                         width, height, bodyColor);
+            float armorW = width * 0.7f;
+            float armorH = height * 0.5f;
+            PlaceholderGraphics.drawRect(batch, x - armorW / 2f, y - armorH / 2f,
+                                         armorW, armorH, ARMOR_COLOR);
+        }
 
         // Boss health bar (wide bar above Goliath)
         float barW = 80f;

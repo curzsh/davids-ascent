@@ -361,14 +361,22 @@ public class PlayingScene extends Scene {
     }
 
     /**
-     * Tile the ground with grass sprites for stage 1, solid color for others.
+     * Tile the ground with the appropriate stage tile.
      */
     private void renderGround(TextureBatch batch) {
-        if (GameSprites.grassTile != null && stageManager.getCurrentStageNumber() == 1) {
+        valthorne.graphics.texture.Texture tile = switch (stageManager.getCurrentStageNumber()) {
+            case 1 -> GameSprites.grassTile;
+            case 2 -> GameSprites.rockyTile;
+            case 3 -> GameSprites.dustTile;
+            case 4 -> GameSprites.battlefieldTile;
+            case 5 -> GameSprites.valleyTile;
+            default -> null;
+        };
+        if (tile != null) {
             int tileSize = 32;
             for (int y = 0; y < Game.WORLD_HEIGHT; y += tileSize) {
                 for (int x = 0; x < Game.WORLD_WIDTH; x += tileSize) {
-                    batch.draw(GameSprites.grassTile, x, y, tileSize, tileSize);
+                    batch.draw(tile, x, y, tileSize, tileSize);
                 }
             }
         }

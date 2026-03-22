@@ -35,6 +35,11 @@ public abstract class Enemy {
     /** Optional sprite sheet for this enemy type. */
     protected SpriteSheet spriteSheet;
 
+    /** Set the animated sprite sheet for this enemy. */
+    public void setSpriteSheet(SpriteSheet sheet) {
+        this.spriteSheet = sheet;
+    }
+
     public Enemy(float x, float y, int health, float speed, int damage,
                  int xpValue, float size, Color color) {
         this.x = x;
@@ -89,6 +94,7 @@ public abstract class Enemy {
     protected void updateCooldowns(float delta) {
         if (hitCooldown > 0) hitCooldown -= delta;
         if (hitFlashTimer > 0) hitFlashTimer -= delta;
+        if (spriteSheet != null) spriteSheet.update(delta);
     }
 
     /**

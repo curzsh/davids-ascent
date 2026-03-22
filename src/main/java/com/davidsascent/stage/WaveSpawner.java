@@ -2,11 +2,13 @@ package com.davidsascent.stage;
 
 import com.davidsascent.Game;
 import com.davidsascent.core.GameSprites;
+import com.davidsascent.core.SpriteSheet;
 import com.davidsascent.entity.ChaserEnemy;
 import com.davidsascent.entity.DashEnemy;
 import com.davidsascent.entity.Enemy;
 import com.davidsascent.entity.ShieldEnemy;
 import com.davidsascent.system.EnemySystem;
+import valthorne.graphics.Color;
 
 import java.util.Random;
 
@@ -93,18 +95,35 @@ public class WaveSpawner {
             case DASHER -> new DashEnemy(
                 x, y, wave.health, wave.speed, wave.damage,
                 wave.xpValue, wave.size, wave.color);
-            default -> {
-                ChaserEnemy chaser = new ChaserEnemy(
-                    x, y, wave.health, wave.speed, wave.damage,
-                    wave.xpValue, wave.size, wave.color);
-                // Use lion sprite for stage 1 chaser enemies
-                if (GameSprites.lionWalk != null) {
-                    chaser.setSpriteSheet(GameSprites.lionWalk);
-                }
-                yield chaser;
-            }
+            default -> new ChaserEnemy(
+                x, y, wave.health, wave.speed, wave.damage,
+                wave.xpValue, wave.size, wave.color);
         };
+        // Assign sprite based on enemy color (which maps to type)
+        SpriteSheet sprite = getSpriteForColor(wave.color);
+        if (sprite != null) {
+            enemy.setSpriteSheet(sprite);
+        }
         enemySystem.addEnemy(enemy);
+    }
+
+    /**
+     * Map enemy color to sprite sheet. Colors are defined in StageDatabase.
+     */
+    private SpriteSheet getSpriteForColor(Color color) {
+        if (color == Color.ORANGE) return GameSprites.lionWalk;
+        if (color == Color.GRAY) return GameSprites.wolfWalk;
+        if (color == Color.GREEN) return GameSprites.snakeMove;
+        if (color == Color.BROWN) return GameSprites.bearWalk;
+        if (color == Color.PURPLE) return GameSprites.scoutWalk;
+        if (color == Color.MAGENTA) return GameSprites.archerWalk;
+        if (color == Color.RED) return GameSprites.soldierWalk;
+        if (color == Color.CRIMSON) return GameSprites.shieldbearerWalk;
+        // BEAST (0.6, 0.4, 0.2) — use boar sprite
+        if (color.getRed() > 140 && color.getGreen() > 90 && color.getGreen() < 110) {
+            return GameSprites.boarWalk;
+        }
+        return null;
     }
 
     public boolean isStageComplete() { return stageComplete; }
