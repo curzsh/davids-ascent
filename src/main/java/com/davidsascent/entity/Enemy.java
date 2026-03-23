@@ -1,6 +1,5 @@
 package com.davidsascent.entity;
 
-import com.davidsascent.core.GameSprites;
 import com.davidsascent.core.PlaceholderGraphics;
 import com.davidsascent.core.SpriteSheet;
 import valthorne.graphics.Color;
@@ -66,13 +65,9 @@ public abstract class Enemy {
 
     public void render(TextureBatch batch) {
         if (!alive) return;
-        if (spriteSheet != null) {
-            spriteSheet.draw(batch, x - width / 2f, y - height / 2f, width, height);
-        } else {
-            PlaceholderGraphics.drawRect(batch, x - width / 2f, y - height / 2f,
-                                         width, height, color);
-        }
-        // White flash overlay when hit
+        if (spriteSheet == null) return; // No sprite assigned — skip rendering
+        spriteSheet.draw(batch, x - width / 2f, y - height / 2f, width, height);
+        // White flash overlay when hit (semi-transparent white rect over sprite)
         if (hitFlashTimer > 0) {
             PlaceholderGraphics.drawRect(batch, x - width / 2f, y - height / 2f,
                                          width, height, HIT_FLASH_COLOR);

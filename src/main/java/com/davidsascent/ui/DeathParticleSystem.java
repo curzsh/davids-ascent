@@ -6,7 +6,7 @@ import valthorne.graphics.texture.TextureBatch;
 
 /**
  * Simple pooled particle burst for enemy death effects.
- * Spawns a cluster of small squares that fly outward and fade.
+ * Spawns a cluster of tiny pixel particles that fly outward and fade.
  */
 public class DeathParticleSystem {
 
@@ -14,14 +14,19 @@ public class DeathParticleSystem {
     private static final int PARTICLES_PER_BURST = 6;
     private static final float LIFETIME = 0.4f;
     private static final float SPEED = 150f;
-    private static final float PARTICLE_SIZE = 4f;
+    /** Small particle sizes: 2x2 or 3x3 to look like pixel particles, not rectangles. */
+    private static final float PARTICLE_SIZE_SMALL = 2f;
+    private static final float PARTICLE_SIZE_LARGE = 3f;
 
     private final float[] px = new float[POOL_SIZE];
     private final float[] py = new float[POOL_SIZE];
     private final float[] vx = new float[POOL_SIZE];
     private final float[] vy = new float[POOL_SIZE];
     private final float[] age = new float[POOL_SIZE];
-    private final Color[] colors = new Color[POOL_SIZE];
+    private final float[] sizes = new float[POOL_SIZE];
+    private final float[] colorR = new float[POOL_SIZE];
+    private final float[] colorG = new float[POOL_SIZE];
+    private final float[] colorB = new float[POOL_SIZE];
     private final boolean[] active = new boolean[POOL_SIZE];
 
     public DeathParticleSystem() {
@@ -32,6 +37,11 @@ public class DeathParticleSystem {
 
     /** Spawn a burst of particles at the given position with the enemy's color. */
     public void burst(float x, float y, Color color) {
+        // Extract color components once via getRed/getGreen/getBlue (0-255 int)
+        float cr = color.getRed() / 255f;
+        float cg = color.getGreen() / 255f;
+        float cb = color.getBlue() / 255f;
+
         int spawned = 0;
         for (int i = 0; i < POOL_SIZE && spawned < PARTICLES_PER_BURST; i++) {
             if (!active[i]) {
@@ -42,7 +52,11 @@ public class DeathParticleSystem {
                 vx[i] = (float) Math.cos(angle) * speed;
                 vy[i] = (float) Math.sin(angle) * speed;
                 age[i] = 0f;
-                colors[i] = color;
+                colorR[i] = cr;
+                colorG[i] = cg;
+                colorB[i] = cb;
+                // Randomly pick 2x2 or 3x3 for variety
+                sizes[i] = Math.random() < 0.5 ? PARTICLE_SIZE_SMALL : PARTICLE_SIZE_LARGE;
                 active[i] = true;
                 spawned++;
             }
@@ -66,11 +80,12 @@ public class DeathParticleSystem {
         for (int i = 0; i < POOL_SIZE; i++) {
             if (!active[i]) continue;
             float alpha = 1f - (age[i] / LIFETIME);
-            float size = PARTICLE_SIZE * alpha;
-            // Use the enemy's color but we can't easily set alpha, so just draw smaller
+            float size = sizes[i] * alpha;
+            if (size < 1f) size = 1f; // minimum 1px so it stays visible
+            Color c = new Color(colorR[i], colorG[i], colorB[i], alpha);
             PlaceholderGraphics.drawRect(batch,
                 px[i] - size / 2f, py[i] - size / 2f,
-                size, size, colors[i]);
+                size, size, c);
         }
     }
 }

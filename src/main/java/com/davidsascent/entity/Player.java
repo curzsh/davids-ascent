@@ -99,21 +99,36 @@ public class Player {
         activeAnim.draw(batch, x, y, WIDTH, HEIGHT);
     }
 
+    /** Warm gold for full health bar. */
+    private static final Color HP_FULL_COLOR = new Color(0.94f, 0.78f, 0.25f, 1f);
+    /** Danger red for low health bar. */
+    private static final Color HP_LOW_COLOR = new Color(0.75f, 0.25f, 0.25f, 1f);
+    /** Very dark brown background for health bar. */
+    private static final Color HP_BAR_BG = new Color(0.1f, 0.05f, 0.02f, 1f);
+    /** Dark outline around health bar. */
+    private static final Color HP_BAR_OUTLINE = new Color(0.06f, 0.03f, 0.01f, 1f);
+
     /**
      * Render the health bar above the player.
+     * Thin 2px bar with 1px dark outline and warm gold fill.
      */
     public void renderHealthBar(TextureBatch batch) {
         float barWidth = 40f;
-        float barHeight = 4f;
+        float barHeight = 2f;
         float barX = x + WIDTH / 2f - barWidth / 2f;
         float barY = y + HEIGHT + 4f;
 
-        // Background (dark red)
-        PlaceholderGraphics.drawRect(batch, barX, barY, barWidth, barHeight, Color.MAROON);
-        // Foreground (green, proportional to health)
+        // 1px dark outline
+        PlaceholderGraphics.drawRect(batch, barX - 1, barY - 1,
+            barWidth + 2, barHeight + 2, HP_BAR_OUTLINE);
+        // Background (very dark brown)
+        PlaceholderGraphics.drawRect(batch, barX, barY, barWidth, barHeight, HP_BAR_BG);
+        // Foreground (lerp warm gold to danger red based on health)
         float healthPercent = (float) health / maxHealth;
-        Color barColor = healthPercent > 0.5f ? Color.GREEN :
-                         healthPercent > 0.25f ? Color.YELLOW : Color.RED;
+        float r = HP_FULL_COLOR.getRed() + (HP_LOW_COLOR.getRed() - HP_FULL_COLOR.getRed()) * (1f - healthPercent);
+        float g = HP_FULL_COLOR.getGreen() + (HP_LOW_COLOR.getGreen() - HP_FULL_COLOR.getGreen()) * (1f - healthPercent);
+        float b = HP_FULL_COLOR.getBlue() + (HP_LOW_COLOR.getBlue() - HP_FULL_COLOR.getBlue()) * (1f - healthPercent);
+        Color barColor = new Color(r, g, b, 1f);
         PlaceholderGraphics.drawRect(batch, barX, barY,
                                      barWidth * healthPercent, barHeight, barColor);
     }

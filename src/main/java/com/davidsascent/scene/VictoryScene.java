@@ -22,9 +22,11 @@ public class VictoryScene extends Scene {
     private float timer = 0f;
     private boolean waitingForRelease = true;
 
-    private static final Color BG = new Color(0.02f, 0.04f, 0.08f, 1f);
-    private static final Color GOLD_BRIGHT = new Color(1f, 0.85f, 0.3f, 1f);
-    private static final Color GOLD_DIM = new Color(0.8f, 0.65f, 0.2f, 1f);
+    // Holy Land palette
+    private static final Color BG = new Color(0.04f, 0.02f, 0.01f, 1f);
+    private static final Color GOLD_BRIGHT = new Color(0.94f, 0.78f, 0.25f, 1f);
+    private static final Color GOLD_DIM = new Color(0.63f, 0.50f, 0.20f, 1f);
+    private static final Color PARCHMENT = new Color(1f, 0.94f, 0.75f, 1f);
     private final Color sparkleColor = new Color(1f, 1f, 1f, 1f);
 
     public VictoryScene(int finalLevel) {
@@ -85,19 +87,19 @@ public class VictoryScene extends Scene {
         // Scripture
         Fonts.drawCentered(batch, Fonts.small(),
             "\"So David triumphed over the",
-            cx, topY - 55, Color.WHITE);
+            cx, topY - 55, PARCHMENT);
         Fonts.drawCentered(batch, Fonts.small(),
             "Philistine with a sling and a stone.",
-            cx, topY - 73, Color.WHITE);
+            cx, topY - 73, PARCHMENT);
         Fonts.drawCentered(batch, Fonts.small(),
             "Without a sword in his hand,",
-            cx, topY - 91, Color.WHITE);
+            cx, topY - 91, PARCHMENT);
         Fonts.drawCentered(batch, Fonts.small(),
             "he struck down the Philistine",
-            cx, topY - 109, Color.WHITE);
+            cx, topY - 109, PARCHMENT);
         Fonts.drawCentered(batch, Fonts.small(),
             "and killed him.\"",
-            cx, topY - 127, Color.WHITE);
+            cx, topY - 127, PARCHMENT);
         Fonts.drawCentered(batch, Fonts.small(),
             "- 1 Samuel 17:50",
             cx, topY - 155, GOLD_DIM);
@@ -118,27 +120,27 @@ public class VictoryScene extends Scene {
             cx, topY - 280, GOLD_DIM);
 
         Fonts.drawCentered(batch, Fonts.medium(), "All 5 stages complete!",
-            cx, topY - 310, Color.GREEN);
+            cx, topY - 310, new Color(0.45f, 0.70f, 0.30f, 1f));
 
-        // Stars decoration (simple rectangles as sparkles)
+        // Sparkle decorations (tiny 2x2 pixel sparkles)
         float sparkle = (float) Math.sin(timer * 3f) * 0.5f + 0.5f;
-        sparkleColor.set(1f, 1f, sparkle, sparkle * 0.8f);
+        sparkleColor.set(0.94f, 0.85f, sparkle * 0.5f + 0.3f, sparkle * 0.8f);
         for (int i = 0; i < 8; i++) {
             float angle = (float)(i * Math.PI * 2 / 8 + timer * 0.5f);
             float sx = cx + (float) Math.cos(angle) * 180f;
             float sy = topY - 140 + (float) Math.sin(angle) * 80f;
-            PlaceholderGraphics.drawRect(batch, sx - 2, sy - 2, 4, 4, sparkleColor);
+            PlaceholderGraphics.drawRect(batch, sx - 1, sy - 1, 2, 2, sparkleColor);
         }
 
         // Play again prompt
         if (timer > 2.0f && ((int)(timer * 2)) % 2 == 0) {
             Fonts.drawCentered(batch, Fonts.small(), "Click to play again",
-                cx, 40, Color.GRAY);
+                cx, 40, GOLD_DIM);
         }
 
         // Credits
         Fonts.drawCentered(batch, Fonts.small(), "David's Ascent",
-            cx, 80, new Color(0.4f, 0.4f, 0.5f, 1f));
+            cx, 80, new Color(0.50f, 0.38f, 0.20f, 1f));
     }
 
     @Override

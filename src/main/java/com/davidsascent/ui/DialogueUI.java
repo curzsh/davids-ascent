@@ -11,6 +11,7 @@ import valthorne.graphics.texture.TextureBatch;
 /**
  * Dialogue/scripture display between stages.
  * Shows stage name, text content, and a "click to continue" prompt.
+ * Styled with warm Holy Land parchment tones.
  */
 public class DialogueUI {
 
@@ -20,12 +21,14 @@ public class DialogueUI {
     private boolean waitingForRelease = false;
     private float displayTimer = 0f;
 
-    private static final Color BG_COLOR = new Color(0.05f, 0.03f, 0.08f, 1f);
-    private static final Color TEXT_AREA = new Color(0.1f, 0.08f, 0.15f, 1f);
-    private static final Color TEXT_AREA_INNER = new Color(0.08f, 0.06f, 0.12f, 1f);
-    private static final Color ACCENT = Color.GOLD;
-    private static final Color ACCENT_DIM = new Color(0.6f, 0.5f, 0.2f, 1f);
-    private static final Color CROSS_COLOR = new Color(0.2f, 0.18f, 0.3f, 1f);
+    // Holy Land palette colors
+    private static final Color BG_COLOR = new Color(0.06f, 0.03f, 0.01f, 1f);
+    private static final Color TEXT_AREA = new Color(0.24f, 0.14f, 0.06f, 1f);
+    private static final Color TEXT_AREA_INNER = new Color(0.18f, 0.10f, 0.04f, 1f);
+    private static final Color ACCENT = new Color(0.94f, 0.78f, 0.25f, 1f);
+    private static final Color ACCENT_DIM = new Color(0.63f, 0.50f, 0.20f, 1f);
+    private static final Color CROSS_COLOR = new Color(0.30f, 0.18f, 0.07f, 1f);
+    private static final Color PARCHMENT = new Color(1f, 0.94f, 0.75f, 1f);
 
     public void show(String stageName, String text) {
         this.stageName = stageName;
@@ -67,11 +70,11 @@ public class DialogueUI {
         float cx = Game.WORLD_WIDTH / 2f;
         float cy = Game.WORLD_HEIGHT / 2f;
 
-        // Full-screen dark background
+        // Full-screen dark background (warm dark umber)
         PlaceholderGraphics.drawRect(batch, 0, 0,
             Game.WORLD_WIDTH, Game.WORLD_HEIGHT, BG_COLOR);
 
-        // Background cross (subtle, behind text)
+        // Background cross (subtle, warm brown behind text)
         float crossW = 6f;
         float crossH = 200f;
         PlaceholderGraphics.drawRect(batch, cx - crossW / 2f, cy - crossH / 2f,
@@ -92,14 +95,14 @@ public class DialogueUI {
         PlaceholderGraphics.drawRect(batch, boxX + inset, boxY + inset,
             boxW - inset * 2, boxH - inset * 2, TEXT_AREA_INNER);
 
-        // Gold border (double line for elegance)
+        // Warm gold border (double line for elegance)
         float b = 2f;
         PlaceholderGraphics.drawRect(batch, boxX - b, boxY - b, boxW + b * 2, b, ACCENT);
         PlaceholderGraphics.drawRect(batch, boxX - b, boxY + boxH, boxW + b * 2, b, ACCENT);
         PlaceholderGraphics.drawRect(batch, boxX - b, boxY, b, boxH, ACCENT);
         PlaceholderGraphics.drawRect(batch, boxX + boxW, boxY, b, boxH, ACCENT);
 
-        // Dim outer border
+        // Dim outer border (warm gold dim)
         float b2 = 1f;
         PlaceholderGraphics.drawRect(batch, boxX - b - 3, boxY - b - 3, boxW + (b + 3) * 2, b2, ACCENT_DIM);
         PlaceholderGraphics.drawRect(batch, boxX - b - 3, boxY + boxH + b + 2, boxW + (b + 3) * 2, b2, ACCENT_DIM);
@@ -128,7 +131,7 @@ public class DialogueUI {
         float lineY = boxY + boxH - 70;
         for (int i = 0; i < lines.length && i < 12; i++) {
             Color lineColor = lines[i].startsWith("—") || lines[i].startsWith("-")
-                ? ACCENT_DIM : Color.WHITE;
+                ? ACCENT_DIM : PARCHMENT;
             Fonts.drawCentered(batch, Fonts.small(), lines[i],
                 cx, lineY, lineColor);
             lineY -= 16;
@@ -139,7 +142,7 @@ public class DialogueUI {
             boolean blink = ((int)(displayTimer * 2)) % 2 == 0;
             if (blink) {
                 Fonts.drawCentered(batch, Fonts.small(), "[ Click to continue ]",
-                    cx, boxY + 15, Color.GRAY);
+                    cx, boxY + 15, ACCENT_DIM);
             }
         }
     }

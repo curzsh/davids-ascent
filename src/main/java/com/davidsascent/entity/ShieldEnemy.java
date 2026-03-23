@@ -1,8 +1,6 @@
 package com.davidsascent.entity;
 
-import com.davidsascent.core.PlaceholderGraphics;
 import valthorne.graphics.Color;
-import valthorne.graphics.texture.TextureBatch;
 
 /**
  * Shieldbearer — tanky enemy that periodically raises its shield.
@@ -14,8 +12,6 @@ public class ShieldEnemy extends Enemy {
     private static final float MARCH_DURATION = 2.0f;
     private static final float BLOCK_DURATION = 1.2f;
     private static final float DAMAGE_REDUCTION = 0.5f;
-    private static final Color SHIELD_FLASH = new Color(0.8f, 0.8f, 0.9f, 0.6f);
-
     private float phaseTimer = 0f;
     private boolean blocking = false;
 
@@ -63,18 +59,6 @@ public class ShieldEnemy extends Enemy {
         return super.takeDamage(amount);
     }
 
-    @Override
-    public void render(TextureBatch batch) {
-        if (!alive) return;
-        // Base enemy body
-        PlaceholderGraphics.drawRect(batch, x - width / 2f, y - height / 2f,
-                                     width, height, color);
-        // Shield indicator when blocking
-        if (blocking) {
-            float shieldW = width + 6f;
-            float shieldH = height + 6f;
-            PlaceholderGraphics.drawRect(batch, x - shieldW / 2f, y - shieldH / 2f,
-                                         shieldW, shieldH, SHIELD_FLASH);
-        }
-    }
+    // Rendering handled by Enemy.render() — the shieldbearer sprite already
+    // includes the shield visual. No custom render override needed.
 }

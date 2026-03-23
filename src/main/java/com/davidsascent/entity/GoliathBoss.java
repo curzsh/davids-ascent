@@ -45,18 +45,23 @@ public class GoliathBoss extends Enemy {
     private static final int THROW_DAMAGE = 20;
     private static final float THROW_WINDUP = 0.4f;
 
+    // --- VFX particle counts ---
+    private static final int SLAM_INDICATOR_DOTS = 24;
+    private static final int SLAM_FLASH_DOTS = 32;
+    private static final int WINDUP_GLOW_DOTS = 16;
+
     // --- Colors ---
     private static final Color BODY_COLOR = new Color(0.5f, 0.3f, 0.2f, 1f);
-    private static final Color ARMOR_COLOR = new Color(0.4f, 0.4f, 0.5f, 1f);
     private static final Color ENRAGED_COLOR = new Color(0.7f, 0.2f, 0.1f, 1f);
-    private static final Color SLAM_COLOR = new Color(1f, 0.5f, 0f, 0.4f);
-    private static final Color WINDUP_COLOR = new Color(1f, 1f, 0.5f, 0.5f);
 
     private AttackState attackState = AttackState.IDLE;
     private float attackTimer = 0f;
     private float cooldownTimer = 0f;
     private float chargeDirX, chargeDirY;
     private float slamFlashTimer = 0f;
+
+    /** Accumulator for pulsing glow effect. */
+    private float glowTime = 0f;
 
     // Spear projectile callback
     private SpearCallback spearCallback;
@@ -85,6 +90,7 @@ public class GoliathBoss extends Enemy {
         updateCooldowns(delta);
         if (GameSprites.goliathIdle != null) GameSprites.goliathIdle.update(delta);
         if (slamFlashTimer > 0) slamFlashTimer -= delta;
+        glowTime += delta * 8f;
 
         float hpPercent = (float) health / maxHealth;
         int phase = hpPercent > 0.6f ? 1 : hpPercent > 0.3f ? 2 : 3;
@@ -258,46 +264,77 @@ public class GoliathBoss extends Enemy {
         if (!alive) return;
 
         float hpPercent = getHealthPercent();
-        Color bodyColor = hpPercent <= 0.3f ? ENRAGED_COLOR : BODY_COLOR;
 
-        // Windup telegraph flash
+        // --- Windup telegraph: pulsing glow dots around the boss ---
         if (isWindingUp()) {
-            PlaceholderGraphics.drawRect(batch, x - width / 2f - 4, y - height / 2f - 4,
-                width + 8, height + 8, WINDUP_COLOR);
+            float pulse = 0.3f + 0.4f * (float) Math.abs(Math.sin(glowTime));
+            float glowRadius = Math.max(width, height) / 2f + 8f;
+            float angleStep = (float) (2 * Math.PI / WINDUP_GLOW_DOTS);
+            for (int i = 0; i < WINDUP_GLOW_DOTS; i++) {
+                float angle = angleStep * i + glowTime * 0.5f;
+                float dotX = x + (float) Math.cos(angle) * glowRadius;
+                float dotY = y + (float) Math.sin(angle) * glowRadius;
+                Color c = new Color(1f, 1f, 0.5f, pulse);
+                PlaceholderGraphics.drawRect(batch, dotX - 2f, dotY - 2f, 4f, 4f, c);
+            }
         }
 
-        // Slam ground indicator
+        // --- Slam ground indicator: circular pattern of dots expanding outward ---
         if (attackState == AttackState.SLAM && attackTimer < SLAM_WINDUP) {
             float progress = attackTimer / SLAM_WINDUP;
             float indicatorRadius = SLAM_RADIUS * progress;
-            // Draw as a cross pattern to indicate AoE
-            PlaceholderGraphics.drawRect(batch,
-                x - indicatorRadius, y - 3, indicatorRadius * 2, 6, SLAM_COLOR);
-            PlaceholderGraphics.drawRect(batch,
-                x - 3, y - indicatorRadius, 6, indicatorRadius * 2, SLAM_COLOR);
+            float angleStep = (float) (2 * Math.PI / SLAM_INDICATOR_DOTS);
+            for (int i = 0; i < SLAM_INDICATOR_DOTS; i++) {
+                float angle = angleStep * i;
+                float dotX = x + (float) Math.cos(angle) * indicatorRadius;
+                float dotY = y + (float) Math.sin(angle) * indicatorRadius;
+                float alpha = 0.3f + 0.4f * progress;
+                Color c = new Color(1f, 0.5f, 0f, alpha);
+                PlaceholderGraphics.drawRect(batch, dotX - 2f, dotY - 2f, 4f, 4f, c);
+            }
+            // Inner ring of smaller dots at half radius
+            int innerDots = SLAM_INDICATOR_DOTS / 2;
+            float innerStep = (float) (2 * Math.PI / innerDots);
+            for (int i = 0; i < innerDots; i++) {
+                float angle = innerStep * i + innerStep / 2f;
+                float dotX = x + (float) Math.cos(angle) * indicatorRadius * 0.5f;
+                float dotY = y + (float) Math.sin(angle) * indicatorRadius * 0.5f;
+                float alpha = 0.2f + 0.3f * progress;
+                Color c = new Color(1f, 0.7f, 0.2f, alpha);
+                PlaceholderGraphics.drawRect(batch, dotX - 1.5f, dotY - 1.5f, 3f, 3f, c);
+            }
         }
 
-        // Slam flash
+        // --- Slam flash: burst of circular dots at full radius ---
         if (slamFlashTimer > 0) {
-            PlaceholderGraphics.drawRect(batch,
-                x - SLAM_RADIUS, y - SLAM_RADIUS,
-                SLAM_RADIUS * 2, SLAM_RADIUS * 2, SLAM_COLOR);
+            float fadeAlpha = slamFlashTimer / SLAM_DURATION;
+            float angleStep = (float) (2 * Math.PI / SLAM_FLASH_DOTS);
+            for (int i = 0; i < SLAM_FLASH_DOTS; i++) {
+                float angle = angleStep * i;
+                float dotX = x + (float) Math.cos(angle) * SLAM_RADIUS;
+                float dotY = y + (float) Math.sin(angle) * SLAM_RADIUS;
+                Color c = new Color(1f, 0.7f, 0.2f, 0.6f * fadeAlpha);
+                PlaceholderGraphics.drawRect(batch, dotX - 2.5f, dotY - 2.5f, 5f, 5f, c);
+            }
+            // Midway ring
+            int midDots = SLAM_FLASH_DOTS / 2;
+            float midStep = (float) (2 * Math.PI / midDots);
+            for (int i = 0; i < midDots; i++) {
+                float angle = midStep * i + midStep / 2f;
+                float dotX = x + (float) Math.cos(angle) * SLAM_RADIUS * 0.6f;
+                float dotY = y + (float) Math.sin(angle) * SLAM_RADIUS * 0.6f;
+                Color c = new Color(1f, 0.5f, 0f, 0.4f * fadeAlpha);
+                PlaceholderGraphics.drawRect(batch, dotX - 2f, dotY - 2f, 4f, 4f, c);
+            }
         }
 
-        // Main body — use sprite if available, otherwise placeholder
+        // Main body — sprite only (no fallback rectangle body)
         if (GameSprites.goliathIdle != null) {
             GameSprites.goliathIdle.draw(batch, x - width / 2f, y - height / 2f,
                                          width, height);
-        } else {
-            PlaceholderGraphics.drawRect(batch, x - width / 2f, y - height / 2f,
-                                         width, height, bodyColor);
-            float armorW = width * 0.7f;
-            float armorH = height * 0.5f;
-            PlaceholderGraphics.drawRect(batch, x - armorW / 2f, y - armorH / 2f,
-                                         armorW, armorH, ARMOR_COLOR);
         }
 
-        // Boss health bar (wide bar above Goliath)
+        // Boss health bar (wide bar above Goliath) — bars are rectangles, this is fine
         float barW = 80f;
         float barH = 6f;
         float barX = x - barW / 2f;

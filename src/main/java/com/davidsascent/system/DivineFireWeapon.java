@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * Divine Fire — a constant ring of fire around David.
  * The ring is always visible and damages any enemy that touches it.
- * Rendered as small squares arranged in a circle.
+ * Rendered as dense circular particles arranged in concentric rings.
  */
 public class DivineFireWeapon implements Weapon {
 
@@ -31,12 +31,20 @@ public class DivineFireWeapon implements Weapon {
     private float rotation = 0f;
     private static final float SPIN_SPEED = 1.5f; // radians per second
 
-    /** Number of segments to draw the ring. */
-    private static final int RING_SEGMENTS = 20;
-    private static final float SEGMENT_SIZE = 8f;
+    /** Outer ring: 36 particles at 3x3 pixels. */
+    private static final int OUTER_RING_PARTICLES = 36;
+    private static final float OUTER_PARTICLE_SIZE = 3f;
 
-    private static final Color FIRE_OUTER = new Color(1f, 0.3f, 0f, 0.8f);
-    private static final Color FIRE_INNER = new Color(1f, 0.7f, 0.1f, 0.9f);
+    /** Inner ring: 28 particles at 2x2 pixels, offset for thickness. */
+    private static final int INNER_RING_PARTICLES = 28;
+    private static final float INNER_PARTICLE_SIZE = 2f;
+
+    /** Middle ring: 32 particles at 4x4 for the core glow. */
+    private static final int MID_RING_PARTICLES = 32;
+    private static final float MID_PARTICLE_SIZE = 4f;
+
+    /** Flicker accumulator for per-particle alpha variation. */
+    private float flickerTime = 0f;
 
     /** Global damage cooldown so we don't melt enemies instantly. */
     private float damageCooldown = 0f;
@@ -46,6 +54,7 @@ public class DivineFireWeapon implements Weapon {
                        List<Enemy> enemies, ProjectileSystem projectiles,
                        com.davidsascent.ui.DamageNumberSystem dmgNumbers) {
         rotation += SPIN_SPEED * delta;
+        flickerTime += delta * 12f; // fast flicker
         if (damageCooldown > 0) damageCooldown -= delta;
 
         // Damage enemies touching the ring
@@ -75,34 +84,57 @@ public class DivineFireWeapon implements Weapon {
 
     @Override
     public void render(TextureBatch batch, float playerX, float playerY) {
-        // Draw the ring as small squares arranged in a circle
-        float angleStep = (float) (2 * Math.PI / RING_SEGMENTS);
+        // --- Outer ring: small dim particles (dark orange/red) ---
+        float outerRadius = radius + 4f;
+        float outerStep = (float) (2 * Math.PI / OUTER_RING_PARTICLES);
+        for (int i = 0; i < OUTER_RING_PARTICLES; i++) {
+            float angle = outerStep * i + rotation * 0.8f;
+            float px = playerX + (float) Math.cos(angle) * outerRadius;
+            float py = playerY + (float) Math.sin(angle) * outerRadius;
 
-        for (int i = 0; i < RING_SEGMENTS; i++) {
-            float angle = angleStep * i + rotation;
-            float x = playerX + (float) Math.cos(angle) * radius;
-            float y = playerY + (float) Math.sin(angle) * radius;
+            // Per-particle flicker: vary alpha between 0.4 and 0.8
+            float flicker = 0.4f + 0.4f * (float) Math.abs(Math.sin(flickerTime + i * 1.7f));
+            Color c = new Color(0.9f, 0.25f, 0f, flicker);
 
-            // Alternate colors for a flickering fire effect
-            Color color = (i % 2 == 0) ? FIRE_OUTER : FIRE_INNER;
-
+            float half = OUTER_PARTICLE_SIZE / 2f;
             PlaceholderGraphics.drawRect(batch,
-                x - SEGMENT_SIZE / 2f, y - SEGMENT_SIZE / 2f,
-                SEGMENT_SIZE, SEGMENT_SIZE, color);
+                px - half, py - half,
+                OUTER_PARTICLE_SIZE, OUTER_PARTICLE_SIZE, c);
         }
 
-        // Draw a second inner ring for thickness
-        float innerRadius = radius - SEGMENT_SIZE * 0.6f;
-        for (int i = 0; i < RING_SEGMENTS; i++) {
-            float angle = angleStep * i + rotation + angleStep / 2f; // offset for fill
-            float x = playerX + (float) Math.cos(angle) * innerRadius;
-            float y = playerY + (float) Math.sin(angle) * innerRadius;
+        // --- Middle ring: core glow particles (bright yellow / orange alternating) ---
+        float midStep = (float) (2 * Math.PI / MID_RING_PARTICLES);
+        for (int i = 0; i < MID_RING_PARTICLES; i++) {
+            float angle = midStep * i + rotation;
+            float px = playerX + (float) Math.cos(angle) * radius;
+            float py = playerY + (float) Math.sin(angle) * radius;
 
-            Color color = (i % 2 == 0) ? FIRE_INNER : FIRE_OUTER;
+            float flicker = 0.7f + 0.25f * (float) Math.abs(Math.sin(flickerTime * 1.3f + i * 2.1f));
+            Color c = (i % 2 == 0)
+                ? new Color(1f, 0.85f, 0.2f, flicker)   // bright yellow
+                : new Color(1f, 0.45f, 0f, flicker);     // orange
 
+            float half = MID_PARTICLE_SIZE / 2f;
             PlaceholderGraphics.drawRect(batch,
-                x - SEGMENT_SIZE / 2f, y - SEGMENT_SIZE / 2f,
-                SEGMENT_SIZE * 0.7f, SEGMENT_SIZE * 0.7f, color);
+                px - half, py - half,
+                MID_PARTICLE_SIZE, MID_PARTICLE_SIZE, c);
+        }
+
+        // --- Inner ring: tiny bright particles for thickness ---
+        float innerRadius = radius - 5f;
+        float innerStep = (float) (2 * Math.PI / INNER_RING_PARTICLES);
+        for (int i = 0; i < INNER_RING_PARTICLES; i++) {
+            float angle = innerStep * i + rotation * 1.2f + innerStep / 2f;
+            float px = playerX + (float) Math.cos(angle) * innerRadius;
+            float py = playerY + (float) Math.sin(angle) * innerRadius;
+
+            float flicker = 0.6f + 0.35f * (float) Math.abs(Math.sin(flickerTime * 1.6f + i * 0.9f));
+            Color c = new Color(1f, 0.85f, 0.2f, flicker); // bright yellow
+
+            float half = INNER_PARTICLE_SIZE / 2f;
+            PlaceholderGraphics.drawRect(batch,
+                px - half, py - half,
+                INNER_PARTICLE_SIZE, INNER_PARTICLE_SIZE, c);
         }
     }
 

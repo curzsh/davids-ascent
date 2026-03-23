@@ -1,7 +1,6 @@
 package com.davidsascent.entity;
 
 import com.davidsascent.core.GameSprites;
-import com.davidsascent.core.PlaceholderGraphics;
 import valthorne.graphics.Color;
 import valthorne.graphics.texture.TextureBatch;
 
@@ -57,13 +56,8 @@ public class Projectile {
 
     public void render(TextureBatch batch) {
         if (!active) return;
-        // Use sling stone sprite for small projectiles, placeholder for others
-        if (size <= 12f && GameSprites.slingStone != null) {
-            GameSprites.slingStone.draw(batch, x - size / 2f, y - size / 2f, size, size);
-        } else {
-            PlaceholderGraphics.drawRect(batch, x - size / 2f, y - size / 2f,
-                                         size, size, color);
-        }
+        if (GameSprites.slingStone == null) return; // Sprite not loaded — skip rendering
+        GameSprites.slingStone.draw(batch, x - size / 2f, y - size / 2f, size, size);
     }
 
     public void deactivate() {

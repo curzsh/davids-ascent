@@ -21,7 +21,8 @@ public class DashEnemy extends Enemy {
     private static final float COOLDOWN_DURATION = 1.0f;
     private static final float DASH_SPEED_MULT = 3.5f;
 
-    private static final Color WINDUP_COLOR = Color.WHITE;
+    /** Semi-transparent white overlay to telegraph windup. */
+    private static final Color WINDUP_OVERLAY = new Color(1f, 1f, 1f, 0.5f);
 
     private State state = State.APPROACH;
     private float stateTimer = 0f;
@@ -103,19 +104,13 @@ public class DashEnemy extends Enemy {
     public void render(TextureBatch batch) {
         if (!alive) return;
 
+        // Always render the sprite via base class
+        super.render(batch);
+
+        // During windup, draw a semi-transparent white overlay to telegraph the dash
         if (state == State.WINDUP) {
-            // Flash white to telegraph the dash
             PlaceholderGraphics.drawRect(batch, x - width / 2f, y - height / 2f,
-                                         width, height, WINDUP_COLOR);
-        } else if (state == State.DASH) {
-            // Stretch in dash direction for speed feel
-            float stretchW = width * (Math.abs(dashDirX) > 0.5f ? 1.4f : 0.8f);
-            float stretchH = height * (Math.abs(dashDirY) > 0.5f ? 1.4f : 0.8f);
-            PlaceholderGraphics.drawRect(batch, x - stretchW / 2f, y - stretchH / 2f,
-                                         stretchW, stretchH, color);
-        } else {
-            PlaceholderGraphics.drawRect(batch, x - width / 2f, y - height / 2f,
-                                         width, height, color);
+                                         width, height, WINDUP_OVERLAY);
         }
     }
 }

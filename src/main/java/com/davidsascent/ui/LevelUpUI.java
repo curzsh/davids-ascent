@@ -15,7 +15,7 @@ import java.util.List;
 
 /**
  * Level-up upgrade selection UI.
- * Shows 3 upgrade cards with names and descriptions.
+ * Shows 3 upgrade cards styled as parchment with Holy Land palette colors.
  */
 public class LevelUpUI {
 
@@ -29,14 +29,23 @@ public class LevelUpUI {
     private static final float CARD_GAP = 20f;
     private static final float CARD_Y = (Game.WORLD_HEIGHT - CARD_HEIGHT) / 2f;
 
-    private static final Color CARD_COLOR = new Color(0.15f, 0.12f, 0.25f, 1f);
-    private static final Color CARD_HIGHLIGHT = new Color(0.25f, 0.2f, 0.4f, 1f);
+    // Holy Land palette — parchment card colors
+    private static final Color CARD_COLOR = new Color(0.36f, 0.23f, 0.1f, 1f);
+    private static final Color CARD_HIGHLIGHT = new Color(0.45f, 0.30f, 0.14f, 1f);
+    private static final Color CARD_INNER = new Color(0.30f, 0.18f, 0.07f, 1f);
+    private static final Color CARD_INNER_HIGHLIGHT = new Color(0.38f, 0.24f, 0.10f, 1f);
     private static final Color OVERLAY_COLOR = new Color(0f, 0f, 0f, 0.6f);
-    private static final Color CARD_BORDER = Color.GOLD;
-    private static final Color CARD_BORDER_HOVER = Color.WHITE;
+    private static final Color CARD_BORDER = new Color(0.24f, 0.12f, 0f, 1f);
+    private static final Color CARD_BORDER_HOVER = new Color(0.94f, 0.78f, 0.25f, 1f);
+    private static final Color CARD_INNER_BORDER = new Color(0.50f, 0.33f, 0.15f, 1f);
+    private static final Color WARM_GOLD = new Color(0.94f, 0.78f, 0.25f, 1f);
+    private static final Color PARCHMENT = new Color(1f, 0.94f, 0.75f, 1f);
+    private static final Color PARCHMENT_DIM = new Color(0.85f, 0.78f, 0.58f, 1f);
 
     private static final Color[] CARD_ACCENT = {
-        Color.CYAN, Color.GREEN, Color.ORANGE
+        new Color(0.63f, 0.36f, 0.17f, 1f),
+        new Color(0.16f, 0.38f, 0.63f, 1f),
+        new Color(0.94f, 0.78f, 0.25f, 1f)
     };
 
     public void show(List<Upgrade> choices) {
@@ -102,7 +111,7 @@ public class LevelUpUI {
 
         // "LEVEL UP!" title
         Fonts.drawCentered(batch, Fonts.large(), "LEVEL UP!",
-            Game.WORLD_WIDTH / 2f, Game.WORLD_HEIGHT / 2f + CARD_HEIGHT / 2f + 20, Color.GOLD);
+            Game.WORLD_WIDTH / 2f, Game.WORLD_HEIGHT / 2f + CARD_HEIGHT / 2f + 20, WARM_GOLD);
 
         // Cards
         float totalWidth = choices.size() * CARD_WIDTH + (choices.size() - 1) * CARD_GAP;
@@ -113,24 +122,40 @@ public class LevelUpUI {
             boolean hovered = (i == hoveredIndex);
             Upgrade upgrade = choices.get(i);
 
-            // Border
-            Color borderColor = hovered ? CARD_BORDER_HOVER : CARD_BORDER;
+            // Outer dark border (umber frame)
             float borderSize = hovered ? 3f : 2f;
             PlaceholderGraphics.drawRect(batch, cardX - borderSize, CARD_Y - borderSize,
-                CARD_WIDTH + borderSize * 2, CARD_HEIGHT + borderSize * 2, borderColor);
+                CARD_WIDTH + borderSize * 2, CARD_HEIGHT + borderSize * 2,
+                hovered ? CARD_BORDER_HOVER : CARD_BORDER);
 
-            // Background
+            // Card background (worn leather tone)
             PlaceholderGraphics.drawRect(batch, cardX, CARD_Y,
                 CARD_WIDTH, CARD_HEIGHT, hovered ? CARD_HIGHLIGHT : CARD_COLOR);
 
-            // Accent stripe at top
-            PlaceholderGraphics.drawRect(batch, cardX, CARD_Y + CARD_HEIGHT - 6,
-                CARD_WIDTH, 6, CARD_ACCENT[i]);
+            // Inner lighter border (1px, parchment feel)
+            float inset = 3f;
+            PlaceholderGraphics.drawRect(batch, cardX + inset, CARD_Y + inset,
+                CARD_WIDTH - inset * 2, 1f, CARD_INNER_BORDER);
+            PlaceholderGraphics.drawRect(batch, cardX + inset, CARD_Y + CARD_HEIGHT - inset - 1,
+                CARD_WIDTH - inset * 2, 1f, CARD_INNER_BORDER);
+            PlaceholderGraphics.drawRect(batch, cardX + inset, CARD_Y + inset,
+                1f, CARD_HEIGHT - inset * 2, CARD_INNER_BORDER);
+            PlaceholderGraphics.drawRect(batch, cardX + CARD_WIDTH - inset - 1, CARD_Y + inset,
+                1f, CARD_HEIGHT - inset * 2, CARD_INNER_BORDER);
+
+            // Inner panel
+            PlaceholderGraphics.drawRect(batch, cardX + inset + 1, CARD_Y + inset + 1,
+                CARD_WIDTH - (inset + 1) * 2, CARD_HEIGHT - (inset + 1) * 2,
+                hovered ? CARD_INNER_HIGHLIGHT : CARD_INNER);
+
+            // Accent stripe at top (earth tones)
+            PlaceholderGraphics.drawRect(batch, cardX + inset + 1, CARD_Y + CARD_HEIGHT - inset - 7,
+                CARD_WIDTH - (inset + 1) * 2, 5, CARD_ACCENT[i]);
 
             // Upgrade name (top area)
             float nameY = CARD_Y + CARD_HEIGHT - 30;
             Fonts.drawCentered(batch, Fonts.small(), upgrade.getName(),
-                cardX + CARD_WIDTH / 2f, nameY, Color.WHITE);
+                cardX + CARD_WIDTH / 2f, nameY, PARCHMENT);
 
             // Description (middle area, word-wrapped manually)
             String desc = upgrade.getDescription();
@@ -143,7 +168,7 @@ public class LevelUpUI {
                 String test = line.isEmpty() ? word : line + " " + word;
                 if (Fonts.small().getWidth(test) > CARD_WIDTH - 20) {
                     Fonts.drawCentered(batch, Fonts.small(), line.toString(),
-                        cardX + CARD_WIDTH / 2f, lineY, Color.LIGHT_GRAY);
+                        cardX + CARD_WIDTH / 2f, lineY, PARCHMENT_DIM);
                     lineY -= 14;
                     line = new StringBuilder(word);
                 } else {
@@ -152,13 +177,13 @@ public class LevelUpUI {
             }
             if (!line.isEmpty()) {
                 Fonts.drawCentered(batch, Fonts.small(), line.toString(),
-                    cardX + CARD_WIDTH / 2f, lineY, Color.LIGHT_GRAY);
+                    cardX + CARD_WIDTH / 2f, lineY, PARCHMENT_DIM);
             }
 
             // Key hint at bottom
             String keyHint = "[" + (i + 1) + "]";
             Fonts.drawCentered(batch, Fonts.small(), keyHint,
-                cardX + CARD_WIDTH / 2f, CARD_Y + 12, Color.GRAY);
+                cardX + CARD_WIDTH / 2f, CARD_Y + 12, new Color(0.63f, 0.50f, 0.30f, 1f));
         }
     }
 
