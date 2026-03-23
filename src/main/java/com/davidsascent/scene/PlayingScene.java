@@ -9,6 +9,9 @@ import com.davidsascent.entity.Enemy;
 import com.davidsascent.entity.GoliathBoss;
 import com.davidsascent.entity.Player;
 import valthorne.Keyboard;
+import valthorne.event.events.KeyPressEvent;
+import valthorne.event.events.KeyReleaseEvent;
+import valthorne.event.listeners.KeyListener;
 import com.davidsascent.stage.StageData;
 import com.davidsascent.stage.StageManager;
 import com.davidsascent.stage.WaveSpawner;
@@ -65,7 +68,8 @@ public class PlayingScene extends Scene {
     private boolean goliathSpawned = false;
     private boolean waitingForBossDialogue = false;
     private boolean slamDamageDealt = false; // prevents slam hitting every frame
-    private boolean debugSkipHeld = false; // debounce for debug skip key
+    private boolean debugSkipRequested = false; // set by KeyListener
+    private KeyListener debugKeyListener;
 
     @Override
     public void init() {
@@ -101,6 +105,19 @@ public class PlayingScene extends Scene {
 
         stageManager = new StageManager();
         waveSpawner = new WaveSpawner();
+
+        // Debug key listener (press 5 to skip to Goliath)
+        debugKeyListener = new KeyListener() {
+            @Override
+            public void keyPressed(KeyPressEvent event) {
+                if (event.getKey() == Keyboard.KEY_5) {
+                    debugSkipRequested = true;
+                }
+            }
+            @Override
+            public void keyReleased(KeyReleaseEvent event) {}
+        };
+        Keyboard.addKeyListener(debugKeyListener);
 
         // Start with the first stage's pre-dialogue
         showStageDialogue(true);
@@ -171,32 +188,26 @@ public class PlayingScene extends Scene {
         }
 
         // Debug: press 5 to skip to Goliath boss fight (buffed player, no minions)
-        if (Keyboard.isKeyDown(Keyboard.KEY_5)) {
-            if (!debugSkipHeld && !goliathSpawned) {
-                debugSkipHeld = true;
-                enemySystem.clear();
-                while (!stageManager.isLastStage()) {
-                    stageManager.advanceStage();
-                }
-                stageManager.setPhase(StageManager.Phase.PLAYING);
-                // Start stage but pause spawner — Goliath only, no minions
-                waveSpawner.startStage(stageManager.getCurrentStage());
-                waveSpawner.setPaused(true);
-                enemySystem.clear();
-                hud.setStageLabel("Stage 5: GOLIATH (debug)");
-                // Buff player for testing
-                player.increaseMaxHealth(200);
-                player.setSpeed(300f);
-                // Add all weapons
-                weaponSystem.addWeapon(new com.davidsascent.system.StaffWeapon());
-                weaponSystem.addWeapon(new com.davidsascent.system.ThrowingStonesWeapon());
-                weaponSystem.addWeapon(new com.davidsascent.system.DivineFireWeapon());
-                goliathSpawned = true;
-                spawnGoliath();
+        if (debugSkipRequested && !goliathSpawned) {
+            debugSkipRequested = false;
+            enemySystem.clear();
+            while (!stageManager.isLastStage()) {
+                stageManager.advanceStage();
             }
-        } else {
-            debugSkipHeld = false;
+            stageManager.setPhase(StageManager.Phase.PLAYING);
+            waveSpawner.startStage(stageManager.getCurrentStage());
+            waveSpawner.setPaused(true);
+            enemySystem.clear();
+            hud.setStageLabel("Stage 5: GOLIATH (debug)");
+            player.increaseMaxHealth(200);
+            player.setSpeed(300f);
+            weaponSystem.addWeapon(new com.davidsascent.system.StaffWeapon());
+            weaponSystem.addWeapon(new com.davidsascent.system.ThrowingStonesWeapon());
+            weaponSystem.addWeapon(new com.davidsascent.system.DivineFireWeapon());
+            goliathSpawned = true;
+            spawnGoliath();
         }
+        debugSkipRequested = false;
 
         // Player
         player.handleInput(delta);
@@ -355,9 +366,10 @@ public class PlayingScene extends Scene {
 
     @Override
     public void dispose() {
-        PlaceholderGraphics.dispose();
         GameSprites.dispose();
-        Fonts.dispose();
+        if (debugKeyListener != null) {
+            Keyboard.removeKeyListener(debugKeyListener);
+        }
     }
 
     /**

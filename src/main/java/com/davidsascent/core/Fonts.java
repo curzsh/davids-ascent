@@ -8,7 +8,7 @@ import valthorne.io.file.ValthorneFiles;
 
 /**
  * Central font manager. Loads fonts once and provides them globally.
- * Uses ValthorneFiles.readBytes for classpath-safe loading (works inside JARs).
+ * Fonts are shared across all scenes and only disposed on app shutdown.
  */
 public final class Fonts {
 
@@ -22,14 +22,10 @@ public final class Fonts {
 
     private Fonts() {}
 
-    private static int refCount = 0;
-
     /**
-     * Load fonts if not already loaded. Uses reference counting so multiple
-     * scenes can safely call init/dispose independently.
+     * Load fonts if not already loaded. Safe to call from multiple scenes.
      */
     public static void init() {
-        refCount++;
         if (small != null) return; // already loaded
         byte[] fontBytes = ValthorneFiles.readBytes("fonts/PressStart2P.ttf");
         small = new Font(FontData.load(fontBytes, 8, FIRST_CHAR, CHAR_COUNT));
@@ -48,9 +44,10 @@ public final class Fonts {
         font.draw(batch, text, centerX - width / 2f, y, color);
     }
 
+    /**
+     * Dispose fonts. Only call on app shutdown, not on scene transitions.
+     */
     public static void dispose() {
-        refCount--;
-        if (refCount > 0) return; // other scenes still using fonts
         if (small != null) { small.dispose(); small = null; }
         if (medium != null) { medium.dispose(); medium = null; }
         if (large != null) { large.dispose(); large = null; }

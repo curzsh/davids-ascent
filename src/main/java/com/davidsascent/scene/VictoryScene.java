@@ -143,7 +143,6 @@ public class VictoryScene extends Scene {
 
     @Override
     public void dispose() {
-        PlaceholderGraphics.dispose();
-        Fonts.dispose();
+        // Shared resources (Fonts, PlaceholderGraphics) persist across scenes
     }
 }

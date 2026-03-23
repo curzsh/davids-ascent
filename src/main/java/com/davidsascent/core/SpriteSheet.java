@@ -1,55 +1,59 @@
 package com.davidsascent.core;
 
-import org.lwjgl.stb.STBImage;
-import org.lwjgl.system.MemoryStack;
-import org.lwjgl.system.MemoryUtil;
+import valthorne.graphics.animation.Animation;
+import valthorne.graphics.animation.AnimationFrame;
+import valthorne.graphics.animation.PlaybackMode;
 import valthorne.graphics.texture.Texture;
 import valthorne.graphics.texture.TextureData;
 import valthorne.graphics.texture.TextureFilter;
 import valthorne.graphics.texture.TextureRegion;
+import valthorne.graphics.texture.TextureRegionDrawable;
 import valthorne.graphics.texture.TextureBatch;
 import valthorne.io.file.ValthorneFiles;
 
-import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
-
 /**
  * A horizontal sprite sheet split into equal-width frames.
- * Loads from classpath resources so it works inside JARs.
+ * Uses Valthorne's built-in Animation and TextureRegionDrawable systems.
  */
 public class SpriteSheet {
 
     private final Texture texture;
-    private final TextureRegion[] frames;
-    private final int frameWidth;
-    private final int frameHeight;
+    private final Animation animation;
     private final int frameCount;
-    private final float frameDuration;
-
-    private float stateTime = 0f;
-    private boolean looping = true;
 
     /**
      * Load a horizontal sprite sheet PNG from classpath.
+     * Uses Valthorne's TextureData.load for PNG decoding with vertical flip.
+     *
      * @param path classpath resource path (e.g. "sprites/characters/char_david_idle.png")
      * @param frameWidth width of each frame in pixels
      * @param frameHeight height of each frame in pixels
      * @param fps animation speed in frames per second
      */
     public SpriteSheet(String path, int frameWidth, int frameHeight, float fps) {
-        this.texture = loadTextureFromClasspath(path);
+        // Load texture from classpath using Valthorne's built-in decoder
+        byte[] bytes = ValthorneFiles.readBytes(path);
+        TextureData data = TextureData.load(bytes, true); // flip vertically for OpenGL
+        this.texture = new Texture(data);
         this.texture.setFilter(TextureFilter.NEAREST);
-        this.frameWidth = frameWidth;
-        this.frameHeight = frameHeight;
-        this.frameDuration = 1f / fps;
 
+        // Split into frame regions wrapped as Drawables
         int totalWidth = texture.getWidth();
         this.frameCount = totalWidth / frameWidth;
-        this.frames = new TextureRegion[frameCount];
+
+        float frameDuration = 1f / fps;
+        AnimationFrame[] animFrames = new AnimationFrame[frameCount];
 
         for (int i = 0; i < frameCount; i++) {
-            frames[i] = new TextureRegion(texture, i * frameWidth, 0, frameWidth, frameHeight);
+            TextureRegion region = new TextureRegion(texture, i * frameWidth, 0, frameWidth, frameHeight);
+            TextureRegionDrawable drawable = new TextureRegionDrawable(region);
+            animFrames[i] = new AnimationFrame(drawable, frameDuration);
         }
+
+        // Create Valthorne Animation
+        this.animation = new Animation(PlaybackMode.FORWARD, animFrames);
+        this.animation.setLooping(true);
+        this.animation.play();
     }
 
     /**
@@ -60,105 +64,58 @@ public class SpriteSheet {
     }
 
     /**
-     * Load a PNG texture from classpath resources using STB Image.
-     * Flips vertically for OpenGL's bottom-left coordinate system.
-     */
-    static Texture loadTextureFromClasspath(String path) {
-        byte[] fileBytes = ValthorneFiles.readBytes(path);
-        ByteBuffer fileBuffer = MemoryUtil.memAlloc(fileBytes.length);
-        fileBuffer.put(fileBytes).flip();
-
-        try (MemoryStack stack = MemoryStack.stackPush()) {
-            IntBuffer widthBuf = stack.mallocInt(1);
-            IntBuffer heightBuf = stack.mallocInt(1);
-            IntBuffer channelsBuf = stack.mallocInt(1);
-
-            // Flip vertically so sprites render right-side-up in OpenGL
-            STBImage.stbi_set_flip_vertically_on_load(true);
-
-            // Decode PNG to RGBA pixels
-            ByteBuffer pixels = STBImage.stbi_load_from_memory(
-                fileBuffer, widthBuf, heightBuf, channelsBuf, 4);
-            if (pixels == null) {
-                throw new RuntimeException("Failed to decode image: " + path
-                    + " — " + STBImage.stbi_failure_reason());
-            }
-
-            int w = widthBuf.get(0);
-            int h = heightBuf.get(0);
-
-            TextureData data = new TextureData(pixels, (short) w, (short) h);
-            Texture tex = new Texture(data);
-
-            STBImage.stbi_image_free(pixels);
-            return tex;
-        } finally {
-            MemoryUtil.memFree(fileBuffer);
-        }
-    }
-
-    /**
      * Advance the animation timer.
      */
     public void update(float delta) {
-        stateTime += delta;
+        animation.update(delta);
     }
 
     /**
      * Reset animation to frame 0.
      */
     public void reset() {
-        stateTime = 0f;
-    }
-
-    /**
-     * Get the current frame's texture region based on elapsed time.
-     */
-    public TextureRegion getCurrentFrame() {
-        int index;
-        if (looping) {
-            index = (int) (stateTime / frameDuration) % frameCount;
-        } else {
-            index = Math.min((int) (stateTime / frameDuration), frameCount - 1);
-        }
-        return frames[index];
-    }
-
-    /**
-     * Get a specific frame by index.
-     */
-    public TextureRegion getFrame(int index) {
-        return frames[Math.min(index, frameCount - 1)];
+        animation.restart();
     }
 
     /**
      * Draw the current animation frame at the given position and size.
      */
     public void draw(TextureBatch batch, float x, float y, float width, float height) {
-        batch.drawRegion(getCurrentFrame(), x, y, width, height);
+        animation.draw(batch, x, y, width, height);
     }
 
     /**
      * Check if a non-looping animation has finished playing.
      */
     public boolean isFinished() {
-        return !looping && stateTime >= frameDuration * frameCount;
+        return animation.isFinished();
     }
 
     public void setLooping(boolean looping) {
-        this.looping = looping;
+        animation.setLooping(looping);
     }
 
     public int getFrameCount() {
         return frameCount;
     }
 
-    public int getFrameWidth() {
-        return frameWidth;
+    /**
+     * Get the underlying texture (for static rendering without animation).
+     */
+    public Texture getTexture() {
+        return texture;
     }
 
-    public int getFrameHeight() {
-        return frameHeight;
+    /**
+     * Load a static texture from classpath using Valthorne's TextureData.
+     * For tiles, UI elements, etc. that don't animate.
+     */
+    public static Texture loadTextureFromClasspath(String path) {
+        byte[] bytes = ValthorneFiles.readBytes(path);
+        TextureData data = TextureData.load(bytes, true);
+        Texture tex = new Texture(data);
+        tex.setFilter(TextureFilter.NEAREST);
+        return tex;
     }
 
     public void dispose() {
