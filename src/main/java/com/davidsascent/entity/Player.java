@@ -126,6 +126,7 @@ public class Player {
     public int getMaxHealth() { return maxHealth; }
     public float getSpeed() { return speed; }
     public void setSpeed(float speed) { this.speed = speed; }
+    public void setPosition(float x, float y) { this.x = x; this.y = y; }
 
     public void takeDamage(int amount) {
         health = Math.max(0, health - amount);

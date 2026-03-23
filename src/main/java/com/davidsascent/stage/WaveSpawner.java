@@ -108,22 +108,40 @@ public class WaveSpawner {
     }
 
     /**
-     * Map enemy color to sprite sheet. Colors are defined in StageDatabase.
+     * Map enemy color to sprite sheet by matching RGB values.
+     * Uses approximate matching since Color instances from StageDatabase
+     * may not be the same reference as Color constants.
      */
     private SpriteSheet getSpriteForColor(Color color) {
-        if (color == Color.ORANGE) return GameSprites.lionWalk;
-        if (color == Color.GRAY) return GameSprites.wolfWalk;
-        if (color == Color.GREEN) return GameSprites.snakeMove;
-        if (color == Color.BROWN) return GameSprites.bearWalk;
-        if (color == Color.PURPLE) return GameSprites.scoutWalk;
-        if (color == Color.MAGENTA) return GameSprites.archerWalk;
-        if (color == Color.RED) return GameSprites.soldierWalk;
-        if (color == Color.CRIMSON) return GameSprites.shieldbearerWalk;
-        // BEAST (0.6, 0.4, 0.2) — use boar sprite
-        if (color.getRed() > 140 && color.getGreen() > 90 && color.getGreen() < 110) {
-            return GameSprites.boarWalk;
-        }
+        int r = color.getRed();
+        int g = color.getGreen();
+        int b = color.getBlue();
+
+        // Stage 1: animals
+        if (colorsMatch(color, Color.ORANGE)) return GameSprites.lionWalk;
+        if (colorsMatch(color, Color.GRAY)) return GameSprites.wolfWalk;
+        if (colorsMatch(color, Color.GREEN)) return GameSprites.snakeMove;
+
+        // Stage 2: large animals
+        if (colorsMatch(color, Color.BROWN)) return GameSprites.bearWalk;
+        // BEAST color (0.6, 0.4, 0.2) = boar
+        if (r > 140 && r < 170 && g > 90 && g < 115 && b > 40 && b < 60) return GameSprites.boarWalk;
+
+        // Stage 3: Philistine scouts
+        if (colorsMatch(color, Color.PURPLE)) return GameSprites.scoutWalk;
+        if (colorsMatch(color, Color.MAGENTA)) return GameSprites.archerWalk;
+
+        // Stage 4-5: Philistine army
+        if (colorsMatch(color, Color.RED)) return GameSprites.soldierWalk;
+        if (colorsMatch(color, Color.CRIMSON)) return GameSprites.shieldbearerWalk;
+
         return null;
+    }
+
+    private boolean colorsMatch(Color a, Color b) {
+        return Math.abs(a.getRed() - b.getRed()) < 5
+            && Math.abs(a.getGreen() - b.getGreen()) < 5
+            && Math.abs(a.getBlue() - b.getBlue()) < 5;
     }
 
     public boolean isStageComplete() { return stageComplete; }

@@ -1,152 +1,239 @@
 -- Philistine Scout walk cycle - 4 frames at 8 FPS
--- Light armor, crouched aggressive pose, feathered headdress, shield + spear
+-- REDESIGNED: 3-tone shading, proper skin (DSN), feathered headdress, alert posture
+-- Light leather jerkin over tunic, short spear + small shield, forward lean
 dofile("C:/code/Valthorne_David_Vs_Goliath/my-game/assets/sprites/palette.lua")
 
 local spr = Sprite(32, 32, ColorMode.RGB)
 spr.filename = "enemy_scout_walk.aseprite"
 
-local O  = PALETTE.VOID_BLACK      -- outlines
-local SK = PALETTE.TERRACOTTA      -- skin
-local SD = PALETTE.DARK_UMBER      -- skin dark
-local SH = PALETTE.DESERT_SIENNA   -- skin highlight
-local AB = PALETTE.AGED_BRASS      -- bronze armor
-local PB = PALETTE.POLISHED_BRONZE -- polished bronze
-local BS = PALETTE.BLOOD_SHADOW    -- purple tunic
-local RF = PALETTE.ROUGH_FLAX      -- tunic accent
-local SB = PALETTE.STAFF_BROWN     -- spear shaft
-local WL = PALETTE.WORN_LEATHER    -- leather details
-local SG = PALETTE.SLATE_GREY      -- shield face
-local EY = PALETTE.HARVEST_YELLOW  -- eye
-local PW = PALETTE.PARCHMENT       -- feather highlight
+-- Color aliases per brief
+local O   = PALETTE.VOID_BLACK      -- outlines
+local DU  = PALETTE.DARK_UMBER      -- deepest shadow, eye pupil/iris
+local TRC = PALETTE.TERRACOTTA      -- skin shadow
+local DSN = PALETTE.DESERT_SIENNA   -- skin base (Philistine faction skin)
+local WTN = PALETTE.WARM_TAN        -- skin highlight
+local AB  = PALETTE.AGED_BRASS      -- bronze helmet mid
+local PB  = PALETTE.POLISHED_BRONZE -- bronze highlight
+local WL  = PALETTE.WORN_LEATHER    -- leather jerkin mid, belt, boots
+local SBN = PALETTE.STAFF_BROWN     -- jerkin highlight, spear shaft
+local FW  = PALETTE.FLAX_WEAVE      -- tunic visible at collar/hem
+local BLN = PALETTE.BLEACHED_LINEN  -- helmet plume feathers
+local SGG = PALETTE.SLATE_GREY      -- optional helmet stone detail
+local STW = PALETTE.STONE_WHITE     -- eye white
+local PW  = PALETTE.PURE_WHITE      -- 1px specular on bronze
 
-local function drawScout(img, bodyY, leftFoot, rightFoot, spearOff)
+local function drawScout(img, bodyY, leftFoot, rightFoot, spearTipOff, armSwingL, armSwingR)
     clear(img)
     bodyY = bodyY or 0
     leftFoot = leftFoot or 0
     rightFoot = rightFoot or 0
-    spearOff = spearOff or 0
+    spearTipOff = spearTipOff or 0
+    armSwingL = armSwingL or 0
+    armSwingR = armSwingR or 0
 
-    local function p(x, y, c) px(img, x, y+bodyY, c) end
+    local function p(x, y, c) px(img, x, y, c) end
     local function hl(x1, x2, y, c) for x=x1,x2 do p(x, y, c) end end
 
-    -- Spear (right hand, behind body slightly)
-    p(22, 3+spearOff, SB); p(22, 4+spearOff, SB); p(22, 5+spearOff, SB)
-    p(22, 6+spearOff, SB); p(22, 7+spearOff, SB); p(22, 8+spearOff, SB)
-    p(22, 9+spearOff, SB); p(22, 10+spearOff, SB)
-    -- Spear tip
-    p(22, 2+spearOff, PB); p(22, 1+spearOff, PB)
-    p(21, 2+spearOff, O); p(23, 2+spearOff, O)
+    -- The body bobs but feet stay planted. We apply bodyY to everything above ankles.
+    local by = bodyY
 
-    -- Feathered headdress (3 pixels tall)
-    p(15, 3, PW); p(16, 3, AB); p(17, 3, PW)
-    p(14, 4, AB); hl(15, 17, 4, PB); p(18, 4, AB)
-    hl(14, 18, 5, AB)
+    -- ===== SPEAR (right hand, diagonal from upper-right) =====
+    -- Shaft: 1px wide + 1px shadow, diagonal from (21,3) to (23,12)
+    -- Tip shifts with spearTipOff for animation
+    local spX = 21 + spearTipOff
+    p(spX, 2+by, PB)  -- spear tip bronze
+    p(spX, 3+by, PB)
+    p(spX-1, 2+by, O); p(spX+1, 2+by, O) -- tip outline
+    p(spX, 1+by, PB)  -- very tip
+    p(spX+1, 3+by, DU) -- shadow edge on tip
+    -- Shaft
+    for sy=4,11 do
+        p(22, sy+by, SBN)
+        p(23, sy+by, WL)  -- shadow edge
+    end
 
-    -- Helmet base
-    hl(13, 19, 6, AB)
-    p(13, 7, AB); p(19, 7, AB)
+    -- ===== FEATHERED HEADDRESS (asymmetric plume fanning right) =====
+    -- 3-4 BLN feather strands fanning from helmet crown to the right
+    p(17, 3+by, BLN); p(18, 2+by, BLN); p(19, 2+by, BLN)
+    p(18, 3+by, BLN); p(19, 3+by, BLN)
+    p(20, 3+by, BLN)  -- outermost feather tip
 
-    -- Head / face
-    hl(14, 18, 7, SK)
-    hl(13, 19, 8, SK)
-    hl(14, 18, 9, SK)
-    hl(14, 18, 10, SK)
-    -- Skin shading
-    p(14, 7, SH); p(15, 7, SH)
-    p(14, 8, SH)
+    -- ===== HELMET (bronze dome) =====
+    -- Left face: PB highlight, Center: AB mid, Right: DU shadow
+    hl(13, 19, 4+by, AB)
+    p(13, 4+by, PB); p(14, 4+by, PB)  -- left highlight
+    p(19, 4+by, DU)                     -- right shadow
+    hl(13, 19, 5+by, AB)
+    p(13, 5+by, PB)                     -- left highlight
+    p(18, 5+by, DU); p(19, 5+by, DU)   -- right shadow
+    -- Specular on helmet
+    p(14, 4+by, PW)
+    -- Cheek guards
+    p(12, 6+by, AB); p(20, 6+by, DU)
 
-    -- Eyes
-    p(14, 8, EY); p(15, 8, SD)
-    p(17, 8, SD); p(18, 8, EY)
+    -- ===== HEAD OUTLINE =====
+    hl(13, 19, 3+by, O)
+    p(12, 4+by, O); p(20, 4+by, O)
+    p(11, 5+by, O); p(21, 5+by, O)
+    p(11, 6+by, O); p(21, 6+by, O)
+    p(11, 7+by, O); p(21, 7+by, O)
+    p(11, 8+by, O); p(21, 8+by, O)
+    p(12, 9+by, O); p(20, 9+by, O)
+    p(13, 10+by, O); p(19, 10+by, O)
 
-    -- Nose + mouth
-    p(16, 9, SD)
-    p(15, 10, SD); p(17, 10, SD)
+    -- ===== FACE (DSN skin base, 3-tone shading) =====
+    -- Upper face
+    hl(14, 18, 6+by, DSN)
+    p(14, 6+by, WTN); p(15, 6+by, WTN)  -- left highlight
+    p(18, 6+by, TRC)                      -- right shadow
+    -- Mid face
+    hl(13, 19, 7+by, DSN)
+    p(13, 7+by, WTN)                      -- left highlight
+    p(19, 7+by, TRC)                      -- right shadow
+    -- Lower face
+    hl(14, 18, 8+by, DSN)
+    p(18, 8+by, TRC)                      -- right shadow
+    -- Chin
+    hl(14, 18, 9+by, DSN)
+    p(14, 9+by, TRC); p(18, 9+by, TRC)   -- jaw shadow
 
-    -- Head outline
-    hl(14, 18, 2, O)
-    p(13, 3, O); p(19, 3, O)
-    p(12, 4, O); p(20, 4, O)
-    p(12, 5, O); p(20, 5, O)
-    p(12, 6, O); p(20, 6, O)
-    p(12, 7, O); p(20, 7, O)
-    p(12, 8, O); p(20, 8, O)
-    p(12, 9, O); p(20, 9, O)
-    p(13, 10, O); p(19, 10, O)
-    p(13, 11, O); p(19, 11, O)
+    -- Eyes (DUM iris per brief - human enemy, not predator)
+    p(14, 7+by, STW); p(15, 7+by, DU)    -- left eye: white + dark iris
+    p(17, 7+by, DU); p(18, 7+by, STW)    -- right eye: dark iris + white
 
-    -- Neck
-    p(15, 11, SK); p(16, 11, SK); p(17, 11, SK)
+    -- Nose
+    p(16, 8+by, TRC)
+    -- Mouth
+    p(15, 9+by, DU); p(17, 9+by, DU)
 
-    -- Tunic body (purple-tinted)
-    hl(12, 20, 12, BS)
-    hl(11, 21, 13, BS)
-    hl(11, 21, 14, BS)
-    hl(11, 21, 15, BS)
-    hl(11, 21, 16, BS)
-    -- Bronze chest armor (breastplate strips)
-    hl(13, 19, 12, AB)
-    hl(13, 19, 13, PB)
-    hl(14, 18, 14, AB)
+    -- ===== NECK =====
+    p(15, 10+by, DSN); p(16, 10+by, DSN); p(17, 10+by, DSN)
+    p(15, 10+by, TRC) -- neck shadow (under chin)
+
+    -- ===== TORSO: Leather jerkin over tunic =====
+    -- The scout leans 1px forward (body shifted left of center slightly)
+    -- Jerkin: WL mid, SBN highlight left, DU shadow right
+    -- Tunic visible at collar: FW (brighter linen)
+
+    -- Collar (tunic showing)
+    hl(13, 19, 11+by, FW)
+    p(15, 11+by, DU); p(16, 11+by, DU); p(17, 11+by, DU)  -- neckline V shadow
+
+    -- Jerkin body (rows 12-16)
+    for row=12,16 do
+        hl(11, 21, row+by, WL)  -- leather base
+    end
+    -- Left edge lit (jerkin highlight)
+    for row=12,16 do p(11, row+by, SBN) end
+    -- Right edge shadow
+    for row=12,16 do p(21, row+by, DU) end
+    -- Center vertical fold
+    for row=12,15 do p(16, row+by, DU) end
+    -- Tunic peeking at armholes
+    p(12, 13+by, FW); p(20, 13+by, FW)
+    -- Bronze chest strip (minimal armor)
+    hl(14, 18, 12+by, AB)
+    p(14, 12+by, PB)  -- left armor highlight
+    p(18, 12+by, DU)  -- right armor shadow
 
     -- Belt
-    hl(12, 20, 17, WL)
+    hl(12, 20, 17+by, WL)
+    p(12, 17+by, SBN) -- belt highlight left
+    p(20, 17+by, DU)  -- belt shadow right
 
-    -- Tunic skirt
-    hl(12, 20, 18, BS)
-    hl(13, 19, 19, RF)
-    hl(13, 19, 20, BS)
+    -- Tunic skirt below belt
+    hl(12, 20, 18+by, FW)
+    hl(13, 19, 19+by, FW)
+    hl(13, 19, 20+by, WL)  -- hem shadow
+    -- Skirt shading
+    p(12, 18+by, BLN)  -- lit left edge
+    p(20, 18+by, DU)   -- shadow right
+    p(16, 19+by, DU)   -- center fold
 
-    -- Shield (left arm) — small round shield
-    p(8, 13, O); p(9, 12, O); p(10, 12, O); p(11, 12, O)
-    p(8, 14, SG); p(9, 13, SG); p(10, 13, SG)
-    p(8, 15, SG); p(9, 14, SG); p(10, 14, SG)
-    p(8, 16, O); p(9, 15, SG); p(10, 15, SG)
-    p(9, 16, O); p(10, 16, O)
-    -- Shield boss
-    p(9, 14, AB)
-    -- Shield outline top/bottom
-    p(7, 13, O); p(7, 14, O); p(7, 15, O)
+    -- ===== SHIELD (left arm, small round ~6px diameter) =====
+    -- Shield outline
+    p(7, 12+by, O); p(8, 11+by, O); p(9, 11+by, O); p(10, 11+by, O); p(11, 12+by, O)
+    p(7, 16+by, O); p(8, 17+by, O); p(9, 17+by, O); p(10, 17+by, O); p(11, 16+by, O)
+    p(6, 13+by, O); p(6, 14+by, O); p(6, 15+by, O)
+    -- Shield face (3-tone bronze)
+    for sy=13,15 do hl(7, 10, sy+by, AB) end
+    p(7, 12+by, AB); p(8, 12+by, AB); p(9, 12+by, AB); p(10, 12+by, AB)
+    p(7, 16+by, AB); p(8, 16+by, AB); p(9, 16+by, AB); p(10, 16+by, AB)
+    -- Shield highlight (left catches light)
+    p(7, 13+by, PB); p(7, 14+by, PB)
+    -- Shield shadow (right)
+    p(10, 14+by, DU); p(10, 15+by, DU)
+    -- Shield boss center
+    p(8, 14+by, PB); p(9, 14+by, PB)
+    -- Specular on boss
+    p(8, 14+by, PW)
 
-    -- Right arm (holding spear)
-    p(21, 13, SK); p(22, 14, SK); p(22, 15, SK); p(22, 16, SD)
+    -- ===== LEFT ARM (holding shield, swing offset) =====
+    p(10+armSwingL, 12+by, DSN)
+    p(9+armSwingL, 13+by, DSN); p(9+armSwingL, 14+by, TRC)
 
-    -- Body outline
-    p(10, 12, O); p(10, 13, O); p(10, 14, O); p(10, 15, O); p(10, 16, O)
-    p(22, 12, O); p(22, 13, O)
-    p(23, 14, O); p(23, 15, O); p(23, 16, O)
-    p(11, 17, O); p(21, 17, O)
+    -- ===== RIGHT ARM (holding spear, swing offset) =====
+    p(22+armSwingR, 12+by, DSN)
+    p(23+armSwingR, 13+by, DSN); p(23+armSwingR, 14+by, DSN)
+    p(23+armSwingR, 15+by, TRC)  -- shadow at wrist
 
-    -- Legs
+    -- ===== BODY OUTLINE =====
+    p(10, 11+by, O); p(10, 12+by, O)
+    for row=13,17 do p(10, row+by, O) end
+    p(22, 11+by, O); p(22, 12+by, O)
+    p(23, 13+by, O); p(24, 14+by, O); p(24, 15+by, O)
+    p(11, 18+by, O); p(21, 18+by, O)
+    p(12, 19+by, O); p(20, 19+by, O)
+    p(12, 20+by, O); p(20, 20+by, O)
+
+    -- ===== LEGS (3px wide thigh tapering to 2px ankle, 6 rows) =====
     -- Left leg
-    p(14, 21+leftFoot, SK); p(14, 22+leftFoot, SK)
-    p(13, 21+leftFoot, SK); p(13, 22+leftFoot, SK)
-    -- Right leg
-    p(18, 21+rightFoot, SK); p(18, 22+rightFoot, SK)
-    p(19, 21+rightFoot, SK); p(19, 22+rightFoot, SK)
+    p(13, 21+leftFoot, DSN); p(14, 21+leftFoot, DSN); p(15, 21+leftFoot, DSN)  -- thigh
+    p(13, 22+leftFoot, DSN); p(14, 22+leftFoot, DSN); p(15, 22+leftFoot, TRC)  -- thigh shadow
+    p(14, 23+leftFoot, DSN); p(15, 23+leftFoot, DSN)  -- shin
+    p(14, 24+leftFoot, DSN); p(15, 24+leftFoot, TRC)  -- shin shadow
+    -- Left leg highlight
+    p(13, 21+leftFoot, WTN)
 
-    -- Sandals
-    hl(12, 15, 23+leftFoot, WL)
-    p(12, 24+leftFoot, WL); p(13, 24+leftFoot, WL)
-    hl(17, 20, 23+rightFoot, WL)
-    p(19, 24+rightFoot, WL); p(20, 24+rightFoot, WL)
+    -- Right leg
+    p(17, 21+rightFoot, DSN); p(18, 21+rightFoot, DSN); p(19, 21+rightFoot, DSN)
+    p(17, 22+rightFoot, TRC); p(18, 22+rightFoot, DSN); p(19, 22+rightFoot, DSN)
+    p(17, 23+rightFoot, DSN); p(18, 23+rightFoot, DSN)
+    p(17, 24+rightFoot, TRC); p(18, 24+rightFoot, DSN)
+    -- Right leg shadow
+    p(19, 21+rightFoot, TRC)
+
+    -- Leg separation
+    p(16, 21+by, DU)
+
+    -- ===== SANDALS (boot-like, 2px tall) =====
+    -- Left sandal
+    hl(12, 16, 25+leftFoot, WL)
+    hl(12, 16, 26+leftFoot, DU)
+    p(12, 25+leftFoot, SBN)  -- strap highlight
+
+    -- Right sandal
+    hl(16, 20, 25+rightFoot, WL)
+    hl(16, 20, 26+rightFoot, DU)
+    p(16, 25+rightFoot, SBN)  -- strap highlight
 end
 
--- Frame 1: Contact
-drawScout(spr.cels[1].image, 0, -1, 1, 0)
+-- Frame 1: Contact — right foot forward, left back; left arm back, right forward
+drawScout(spr.cels[1].image, 0, 1, -1, 0, -1, 0)
 
--- Frame 2: Down
+-- Frame 2: Down — weight loads, body drops 1px
 local img2 = newFrame(spr)
-drawScout(img2, 1, 0, 1, -1)
+drawScout(img2, 1, 0, 0, 0, 0, 0)
 
--- Frame 3: Passing
+-- Frame 3: Passing — mid-stride, feet even
 local img3 = newFrame(spr)
-drawScout(img3, 0, 0, 0, 0)
+drawScout(img3, 0, -1, 1, 1, 0, 0)
 
--- Frame 4: Up
+-- Frame 4: Up — push off, body rises 1px; mirror of frame 1
 local img4 = newFrame(spr)
-drawScout(img4, -1, 1, -1, 1)
+drawScout(img4, -1, -1, 1, 0, 1, -1)
 
+-- 8 FPS = 125ms per frame
 for i=1,#spr.frames do spr.frames[i].duration = 0.125 end
 
 local outDir = "C:\\code\\Valthorne_David_Vs_Goliath\\my-game\\assets\\sprites\\enemies\\env3_scout\\"

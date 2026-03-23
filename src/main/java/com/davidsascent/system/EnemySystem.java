@@ -44,7 +44,7 @@ public class EnemySystem {
             // Check contact with player
             if (Collision.circlesOverlap(
                     e.getX(), e.getY(), e.getRadius(),
-                    player.getCenterX(), player.getCenterY(), Player.WIDTH / 2f)) {
+                    player.getCenterX(), player.getCenterY(), Player.WIDTH * 0.3f)) {
                 touchingPlayer = true;
                 if (contactDamageCooldown <= 0) {
                     player.takeDamage(e.getDamage());

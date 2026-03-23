@@ -1,126 +1,202 @@
 -- Wolf enemy walk cycle - 4 frames at 8 FPS
+-- Redesigned: lean grey predator, pointy ears, head thrust forward, 4-leg independent anim
 dofile("C:/code/Valthorne_David_Vs_Goliath/my-game/assets/sprites/palette.lua")
 
 local spr = Sprite(32, 32, ColorMode.RGB)
 spr.filename = "enemy_wolf_walk.aseprite"
 
-local O  = PALETTE.VOID_BLACK
-local FD = PALETTE.DARK_UMBER      -- shadow
-local F  = PALETTE.SLATE_GREY      -- base fur
-local FH = PALETTE.STONE_WHITE     -- highlight
-local FM = PALETTE.ROUGH_FLAX      -- mid-shadow accent
-local EY = PALETTE.HARVEST_YELLOW  -- eyes
-local N  = PALETTE.DARK_UMBER      -- nose
+-- Color aliases
+local O   = PALETTE.VOID_BLACK     -- outline
+local FD  = PALETTE.DARK_UMBER     -- deep shadow, dorsal stripe
+local G   = PALETTE.SLATE_GREY     -- coat primary
+local GH  = PALETTE.STONE_WHITE    -- coat highlight
+local M   = PALETTE.TERRACOTTA     -- paws, inner ear skin
+local EY  = PALETTE.HARVEST_YELLOW -- predator eyes
+local SB  = PALETTE.SANDY_BROWN    -- inner ear
+local PW  = PALETTE.PURE_WHITE     -- specular
 
-local function drawWolf(img, bodyY, leftPawOff, rightPawOff, tailOff)
+local function drawWolf(img, bodyY, flOff, frOff, rlOff, rrOff, tailOff)
     clear(img)
-    bodyY = bodyY or 0
-    leftPawOff = leftPawOff or 0
-    rightPawOff = rightPawOff or 0
+    bodyY   = bodyY   or 0
+    flOff   = flOff   or 0
+    frOff   = frOff   or 0
+    rlOff   = rlOff   or 0
+    rrOff   = rrOff   or 0
     tailOff = tailOff or 0
 
     local function p(x, y, c) px(img, x, y+bodyY, c) end
     local function hl(x1, x2, y, c) for x=x1,x2 do p(x, y, c) end end
 
-    -- Tail (thin, curved up)
-    p(5, 11+tailOff, F); p(4, 10+tailOff, F); p(3, 9+tailOff, FH)
-    p(3, 8+tailOff, FD)
+    -- === TAIL (held low, 2px wide, aggressive hunting position) ===
+    p(4, 16+tailOff, G);   p(5, 16+tailOff, FD)
+    p(3, 15+tailOff, G);   p(4, 15+tailOff, FD)
+    p(3, 14+tailOff, GH);  p(4, 14+tailOff, G)
+    p(4, 13+tailOff, GH);  p(5, 13+tailOff, G)
+    p(5, 12+tailOff, GH);  p(6, 12+tailOff, G)
+    -- Tail outline
+    p(3, 13+tailOff, O); p(2, 14+tailOff, O); p(2, 15+tailOff, O)
+    p(3, 16+tailOff, O); p(5, 17+tailOff, O)
 
-    -- Ears (pointy, taller than lion)
-    p(14, 2, O); p(13, 3, O); p(14, 3, F); p(15, 3, O)
-    p(19, 2, O); p(18, 3, O); p(19, 3, F); p(20, 3, O)
+    -- === EARS (pointed triangles, 3px base x 3px tall - wolf's defining feature) ===
+    -- Left ear
+    p(19, 2, O)
+    p(18, 3, O); p(19, 3, GH); p(20, 3, O)
+    p(17, 4, O); p(18, 4, G);  p(19, 4, SB); p(20, 4, O)
+    -- Right ear
+    p(24, 2, O)
+    p(23, 3, O); p(24, 3, GH); p(25, 3, O)
+    p(23, 4, O); p(24, 4, G);  p(25, 4, SB); p(26, 4, O)
 
-    -- Head (narrower, more angular than lion)
-    hl(13, 20, 4, F)
-    hl(12, 20, 5, F); hl(12, 20, 6, F)
-    hl(12, 21, 7, F)
-    hl(13, 22, 8, F)    -- elongated snout
-    hl(14, 22, 9, F)
-    -- Highlight upper-left
-    p(13, 4, FH); p(14, 4, FH); p(13, 5, FH)
+    -- === HEAD (narrow triangular, thrust forward to x~26, hunting posture) ===
+    -- Skull outline
+    hl(18, 26, 5, O)
+    p(17, 6, O); p(27, 6, O)
+    p(17, 7, O); p(27, 7, O)
+    p(17, 8, O); p(28, 8, O)
+    p(18, 9, O); p(28, 9, O)
+    hl(19, 27, 10, O)
 
-    -- Eyes
-    p(14, 6, EY); p(19, 6, EY)
-    p(15, 6, FD); p(18, 6, FD)
+    -- Skull fill with 3-tone shading
+    -- Top highlight (STW)
+    p(19, 5, GH); p(20, 5, GH); p(21, 5, GH); p(22, 5, GH); p(23, 5, GH); p(24, 5, GH); p(25, 5, GH)
+    -- Left (lit): GH highlight
+    p(18, 6, GH); p(19, 6, GH); p(20, 6, G); p(21, 6, G); p(22, 6, G)
+    p(18, 7, GH); p(19, 7, G);  p(20, 7, G); p(21, 7, G); p(22, 7, G)
+    -- Right (shadow): FD
+    p(23, 6, G);  p(24, 6, FD); p(25, 6, FD); p(26, 6, FD)
+    p(23, 7, G);  p(24, 7, FD); p(25, 7, FD); p(26, 7, FD)
 
-    -- Nose/snout
-    p(21, 8, N); p(22, 8, O)
-    p(21, 9, N); p(22, 9, O)
+    -- Dorsal stripe on skull
+    p(21, 5, FD); p(22, 5, FD)
 
-    -- Head outline
-    hl(13, 20, 3, O)
-    p(12, 4, O); p(21, 4, O)
-    p(11, 5, O); p(21, 5, O)
-    p(11, 6, O); p(21, 6, O)
-    p(11, 7, O); p(22, 7, O)
-    p(12, 8, O); p(23, 8, O)
-    p(13, 9, O); p(23, 9, O)
-    hl(14, 22, 10, O)
+    -- Snout (extends forward, narrower than skull)
+    p(18, 8, G); p(19, 8, G); p(20, 8, G); p(21, 8, G); p(22, 8, G)
+    p(23, 8, G); p(24, 8, G); p(25, 8, GH); p(26, 8, G); p(27, 8, FD)
+    p(19, 9, G); p(20, 9, G); p(21, 9, G); p(22, 9, FD)
+    p(23, 9, FD); p(24, 9, FD); p(25, 9, GH); p(26, 9, G); p(27, 9, FD)
+    -- Snout top ridge: GH highlight (upper-left light)
+    p(25, 8, GH); p(25, 9, GH)
 
-    -- Neck / shoulder transition
-    hl(10, 20, 10, F)
-    hl(9, 19, 11, F)
+    -- Eyes: HYL amber predator eyes with outline
+    p(20, 7, FD); p(21, 7, EY); p(22, 7, FD)  -- left eye
+    p(24, 7, FD); p(25, 7, EY); p(26, 7, FD)  -- right eye
+    -- Specular dot on left eye
+    p(21, 7, PW)
 
-    -- Body (leaner than lion)
-    hl(8, 20, 12, F); hl(8, 20, 13, F)
-    hl(8, 19, 14, F); hl(9, 19, 15, F)
-    hl(10, 18, 16, F)
-    -- Shading
-    p(8, 12, FD); p(8, 13, FD); p(8, 14, FD)
-    p(20, 12, FH); p(20, 13, FH)
-    hl(13, 17, 14, FH)  -- belly highlight
+    -- Nose (wet, at snout tip with specular)
+    p(26, 9, FD); p(27, 9, FD)
+    p(27, 9, PW)  -- specular on wet nose
 
+    -- Mouth underside
+    p(23, 9, FD); p(24, 9, FD)
+
+    -- === BODY (low-slung, lean, asymmetric - haunches near x=8) ===
     -- Body outline
-    p(9, 10, O); p(21, 10, O)
-    p(7, 11, O); p(20, 11, O)
-    p(7, 12, O); p(21, 12, O)
-    p(7, 13, O); p(21, 13, O)
-    p(7, 14, O); p(20, 14, O)
-    p(8, 15, O); p(20, 15, O)
-    p(9, 16, O); p(19, 16, O)
+    p(7, 10, O); p(19, 10, O)
+    p(6, 11, O); p(20, 11, O)
+    p(6, 12, O); p(21, 12, O)
+    p(6, 13, O); p(21, 13, O)
+    p(6, 14, O); p(21, 14, O)
+    p(7, 15, O); p(20, 15, O)
+    p(8, 16, O); p(19, 16, O)
+    hl(9, 18, 17, O)
 
-    -- Front legs (thinner than lion)
-    p(12, 17+leftPawOff, FD); p(13, 17+leftPawOff, F)
-    p(12, 18+leftPawOff, FD); p(13, 18+leftPawOff, F)
-    p(12, 19+leftPawOff, FD); p(13, 19+leftPawOff, F)
-    p(12, 20+leftPawOff, FD); p(13, 20+leftPawOff, FD)
+    -- Neck transition
+    p(16, 10, G); p(17, 10, G); p(18, 10, G)
 
-    p(17, 17+rightPawOff, F); p(18, 17+rightPawOff, FH)
-    p(17, 18+rightPawOff, F); p(18, 18+rightPawOff, FH)
-    p(17, 19+rightPawOff, F); p(18, 19+rightPawOff, FH)
-    p(17, 20+rightPawOff, FD); p(18, 20+rightPawOff, FD)
+    -- Dorsal stripe (1px FD from skull to tail)
+    p(15, 10, FD); p(14, 11, FD); p(13, 12, FD); p(12, 13, FD); p(11, 14, FD)
 
-    -- Back legs
-    p(9, 16, FD); p(10, 16, F)
-    p(9, 17, FD); p(10, 17, F)
-    p(9, 18, FD); p(10, 18, F)
-    p(9, 19, FD); p(10, 19, FD)
+    -- Left flank: GH highlight (upper-left light)
+    p(7, 11, GH);  p(7, 12, GH);  p(7, 13, GH)
+    p(8, 11, GH);  p(8, 12, GH);  p(8, 13, GH)
+    p(9, 11, GH);  p(9, 12, GH);  p(9, 13, GH)
 
-    p(19, 16, F); p(20, 16, FH)
-    p(19, 17, F); p(20, 17, FH)
-    p(19, 18, F); p(20, 18, FH)
-    p(19, 19, FD); p(20, 19, FD)
+    -- Mid body: G base
+    hl(10, 18, 11, G)
+    hl(10, 20, 12, G)
+    hl(10, 20, 13, G)
+    hl(10, 20, 14, G)
+    hl(9, 19, 15, G)
+    hl(10, 18, 16, G)
+
+    -- Right flank: FD shadow (wolf belly is dark, low to ground)
+    p(19, 11, FD); p(20, 12, FD); p(20, 13, FD); p(20, 14, FD)
+    p(19, 15, FD)
+
+    -- Re-apply left highlight
+    p(7, 11, GH); p(7, 12, GH); p(7, 13, GH)
+    p(8, 11, GH); p(8, 12, GH); p(8, 13, GH)
+
+    -- === LEGS (4 independent, 3px wide, larger stride than lion) ===
+    -- Front-left leg (cols 13-15)
+    local fly = 17 + flOff
+    p(13, fly, FD);   p(14, fly, G);   p(15, fly, GH)
+    p(13, fly+1, FD); p(14, fly+1, G); p(15, fly+1, GH)
+    p(13, fly+2, FD); p(14, fly+2, G); p(15, fly+2, G)
+    -- Paw
+    p(13, fly+3, O); p(14, fly+3, M); p(15, fly+3, O)
+    -- Outline
+    p(12, fly, O); p(16, fly, O)
+    p(12, fly+1, O); p(16, fly+1, O)
+    p(12, fly+2, O); p(16, fly+2, O)
+
+    -- Front-right leg (cols 17-19)
+    local fry = 17 + frOff
+    p(17, fry, FD);   p(18, fry, G);   p(19, fry, GH)
+    p(17, fry+1, FD); p(18, fry+1, G); p(19, fry+1, GH)
+    p(17, fry+2, FD); p(18, fry+2, G); p(19, fry+2, G)
+    -- Paw
+    p(17, fry+3, O); p(18, fry+3, M); p(19, fry+3, O)
+    -- Outline
+    p(16, fry, O); p(20, fry, O)
+    p(16, fry+1, O); p(20, fry+1, O)
+    p(16, fry+2, O); p(20, fry+2, O)
+
+    -- Rear-left leg (cols 8-10)
+    local rly = 17 + rlOff
+    p(8, rly, FD);   p(9, rly, G);   p(10, rly, GH)
+    p(8, rly+1, FD); p(9, rly+1, G); p(10, rly+1, GH)
+    p(8, rly+2, FD); p(9, rly+2, G); p(10, rly+2, G)
+    -- Paw
+    p(8, rly+3, O); p(9, rly+3, M); p(10, rly+3, O)
+    -- Outline
+    p(7, rly, O); p(11, rly, O)
+    p(7, rly+1, O); p(11, rly+1, O)
+    p(7, rly+2, O); p(11, rly+2, O)
+
+    -- Rear-right leg (cols 11-13, behind front-left)
+    local rry = 17 + rrOff
+    p(11, rry, FD);   p(12, rry, G);   p(13, rry, GH)
+    p(11, rry+1, FD); p(12, rry+1, G); p(13, rry+1, GH)
+    p(11, rry+2, FD); p(12, rry+2, G); p(13, rry+2, G)
+    -- Paw
+    p(11, rry+3, O); p(12, rry+3, M); p(13, rry+3, O)
+    -- Outline
+    p(10, rry, O); p(14, rry, O)
+    p(10, rry+1, O); p(14, rry+1, O)
+    p(10, rry+2, O); p(14, rry+2, O)
 end
 
--- Frame 1: Contact
-drawWolf(spr.cels[1].image, 0, -1, 1, 0)
+-- Frame 1: Contact (FL+BR forward) - larger strides (+/-3px) for speed
+drawWolf(spr.cels[1].image, 0, -3, 1, 1, -2, 0)
 
--- Frame 2: Down
+-- Frame 2: Down (weight loads, body drops)
 local img2 = newFrame(spr)
-drawWolf(img2, 1, 0, 1, -1)
+drawWolf(img2, 1, -2, 0, 0, -1, -2)
 
--- Frame 3: Passing
+-- Frame 3: Passing (FR+BL forward)
 local img3 = newFrame(spr)
-drawWolf(img3, 0, 0, 0, 0)
+drawWolf(img3, 0, 1, -3, -2, 1, 2)
 
--- Frame 4: Up
+-- Frame 4: Up (push-off)
 local img4 = newFrame(spr)
-drawWolf(img4, -1, 1, -1, 1)
+drawWolf(img4, -1, 0, -1, -1, 0, -1)
 
 for i=1,#spr.frames do spr.frames[i].duration = 0.125 end
 
 local outDir = "C:\\code\\Valthorne_David_Vs_Goliath\\my-game\\assets\\sprites\\enemies\\env1_wolf\\"
-os.execute('mkdir "' .. outDir:gsub("\\$","") .. '" 2>nul')
+os.execute('mkdir "' .. outDir .. '" 2>NUL')
 spr:saveAs(outDir .. "enemy_wolf_walk.aseprite")
 
 app.command.ExportSpriteSheet{

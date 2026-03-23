@@ -71,7 +71,7 @@ public class GoliathBoss extends Enemy {
         super(x, y, 350, 38f, 25, 100, BOSS_WIDTH, BODY_COLOR);
         this.width = BOSS_WIDTH;
         this.height = BOSS_HEIGHT;
-        this.radius = BOSS_WIDTH / 2f;
+        this.radius = BOSS_WIDTH * 0.3f; // tighter hitbox to match sprite
     }
 
     /** Set callback for spear projectile creation. */

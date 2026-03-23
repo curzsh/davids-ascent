@@ -283,7 +283,7 @@ public class PlayingScene extends Scene {
             // Boss contact damage
             if (Collision.circlesOverlap(
                     goliathBoss.getX(), goliathBoss.getY(), goliathBoss.getRadius(),
-                    player.getCenterX(), player.getCenterY(), Player.WIDTH / 2f)) {
+                    player.getCenterX(), player.getCenterY(), Player.WIDTH * 0.3f)) {
                 player.takeDamage(goliathBoss.getDamage());
             }
 
@@ -429,7 +429,9 @@ public class PlayingScene extends Scene {
     }
 
     private void spawnGoliath() {
-        goliathBoss = new GoliathBoss(Game.WORLD_WIDTH / 2f, Game.WORLD_HEIGHT - 100f);
+        // Spawn Goliath at top of arena, move player to bottom to avoid overlap
+        goliathBoss = new GoliathBoss(Game.WORLD_WIDTH / 2f, Game.WORLD_HEIGHT - 150f);
+        player.setPosition(Game.WORLD_WIDTH / 2f - Player.WIDTH / 2f, 50f);
         bossProjectiles.clear();
         goliathBoss.setSpearCallback((x, y, velX, velY, dmg) ->
             bossProjectiles.spawn(x, y, velX, velY, dmg, 12f, 3f,

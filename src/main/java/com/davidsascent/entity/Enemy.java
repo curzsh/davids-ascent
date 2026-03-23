@@ -51,7 +51,9 @@ public abstract class Enemy {
         this.xpValue = xpValue;
         this.width = size;
         this.height = size;
-        this.radius = size / 2f;
+        // Collision radius is smaller than render size since sprites have
+        // transparent padding. 60% of half-size gives tight-fitting hitboxes.
+        this.radius = size * 0.3f;
         this.color = color;
     }
 
